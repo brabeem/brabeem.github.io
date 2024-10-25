@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dev.alex</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --text: #ffffff;
+            --bg: #000000;
+            --accent: #00ffff;
+            --gray: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Animated name styles */
+        .intro span {
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+        }
+
+        .intro span::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -10%;
+            width: 120%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 255, 255, 0.4),
+                transparent
+            );
+            animation: slide-glow 3s linear infinite;
+        }
+
+        @keyframes slide-glow {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Updated nav styles with fancy icons */
+        .nav {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .nav a i {
+            font-size: 1.5rem;
+        }
+
+        .nav a::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem;
+            background: var(--gray);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .nav a:hover::after {
+            opacity: 1;
+            visibility: visible;
+            top: 120%;
+        }
+
+        .nav a i {
+            transition: transform 0.3s ease;
+        }
+
+        .nav a:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Rest of your existing styles */
+        header {
+            padding: 4rem 0;
+        }
+
+        .intro {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .subtext {
+            font-size: 1.2rem;
+            opacity: 0.7;
+            max-width: 600px;
+        }
+
+        .projects {
+            margin: 4rem 0;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project {
+            background: var(--gray);
+            padding: 2rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.1);
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .project-description {
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech {
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .project-links a {
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .project-links a:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+            padding: 2rem 0;
+            border-top: 1px solid var(--gray);
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            opacity: 0.7;
+        }
+
+        footer {
+            padding: 4rem 0;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .intro {
+                font-size: 2rem;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="container">
+        <h1 class="intro">Hey, i'm <span>Brabeem</span></h1>
+        <p class="subtext">Backend dev who writes clean go code and builds cool stuff. minimal solutions to complex problems.</p>
+        <nav class="nav">
+            <a href="#work" data-text="work"><i class="fas fa-laptop-code"></i></a>
+            <a href="https://github.com/brabeem" data-text="github"><i class="fab fa-github"></i></a>
+            <a href="mailto:brabeem123@gmail.com" data-text="hit me up"><i class="fas fa-paper-plane"></i></a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="stats">
+            <div class="stat">
+                <div class="stat-number">5M+</div>
+                <div class="stat-label">requests/day</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">uptime</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">2+</div>
+                <div class="stat-label">years with go</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">&lt;3ms</div>
+                <div class="stat-label">avg response</div>
+            </div>
+        </section>
+
+        <section id="work" class="projects">
+            <div class="project-grid">
+                <div class="project">
+                    <h3 class="project-title">Myra-Erp</h3>
+                    <p class="project-description">Application focused on day to day cooperative transaction and reporting. Creates report from billions of data within seconds. Its used by 2000+ Cooperatives all over Nepal. </p>
+                    <div class="tech-stack">
+                        <span class="tech">go</span>
+                        <span class="tech">graphql</span>
+                        <span class="tech">redis</span>
+                        <span class="tech">Ti-db</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="http://myra-prod.dev.myraerp.com"><i class="fas fa-external-link-alt"></i> demo</a>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <h3 class="project-title">Video Moment Localizer</h3>
+                    <p class="project-description">Given a video and text , the application localizes the moment described by the text in the video.Improvised the state of the art and published paper for this work.</p>
+                    <div class="tech-stack">
+                        <span class="tech">Python</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/brabeem/Cross-modal-Contrastive-Learning-with-Asymmetric-Co-attention-Network-for-Video-Moment-Retrieval"><i class="fab fa-github"></i> Code</a>
+                        <a href="https://openaccess.thecvf.com/content/WACV2024W/Pretrain/papers/Panta_Cross-Modal_Contrastive_Learning_With_Asymmetric_Co-Attention_Network_for_Video_Moment_WACVW_2024_paper.pdf"><i class="fas fa-file"></i> Paper</a>
+                    </div>
+                </div>
+
+                <div class="project">
+                    <h3 class="project-title">Dodgeball Game Bot</h3>
+                    <p class="project-description">kubernetes made easy. because managing clusters shouldn't require a phd. automates the boring stuff.</p>
+                    <div class="tech-stack">
+                        <span class="tech">Python</span>
+                        <span class="tech">Unity</span>
+                        <span class="tech">Reinforcement Learning</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/brabeem/DodgeBall_MA_RL"><i class="fab fa-github"></i> code</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>built with minimal effort, maximum impact</p>
+    </footer>
+</body>
+</html>
