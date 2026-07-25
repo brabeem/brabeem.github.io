@@ -3,331 +3,404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dev.brabeem</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <title>Brabeem's Quest — Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <style>
-        :root {
-            --text: #ffffff;
-            --bg: #000000;
-            --accent: #00ffff;
-            --gray: #333333;
-        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        ::selection{background:#FFC800;color:#0a0a1a}
+        html{scroll-behavior:smooth}
+        body{font-family:'Inter',sans-serif;background:#0a0a1a;color:#e0e0e0;overflow-x:hidden}
+        .pixel-font{font-family:'Press Start 2P',cursive}
+        #stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+        #start-screen{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,#1a1a3e 0%,#0a0a1a 70%);transition:opacity .8s,transform .8s}
+        #start-screen.hidden{opacity:0;transform:scale(1.1);pointer-events:none}
+        .title-glow{text-shadow:0 0 20px rgba(88,204,2,.6),0 0 40px rgba(88,204,2,.3)}
+        .start-btn{background:linear-gradient(135deg,#58CC02,#46a302);border:4px solid #3d8c01;border-radius:16px;padding:18px 48px;color:#fff;font-family:'Press Start 2P',cursive;font-size:14px;cursor:pointer;position:relative;box-shadow:0 6px 0 #2d6b01,0 8px 20px rgba(88,204,2,.3);transition:all .15s}
+        .start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 0 #2d6b01,0 12px 30px rgba(88,204,2,.4)}
+        .start-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #2d6b01}
+        .start-btn::after{content:'';position:absolute;top:4px;left:8px;right:8px;height:40%;background:rgba(255,255,255,.15);border-radius:8px 8px 50% 50%}
+        #game-hud{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,26,.92);backdrop-filter:blur(12px);border-bottom:2px solid rgba(88,204,2,.3);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;transform:translateY(-100%);transition:transform .5s}
+        #game-hud.visible{transform:translateY(0)}
+        .xp-bar-outer{width:220px;height:18px;background:#1a1a2e;border-radius:9px;border:2px solid #2a2a4e;overflow:hidden;position:relative}
+        .xp-bar-inner{height:100%;background:linear-gradient(90deg,#58CC02,#7FEF3A);border-radius:7px;width:0%;position:relative;transition:width .8s cubic-bezier(.4,0,.2,1)}
+        .xp-bar-inner::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:40%;background:rgba(255,255,255,.25);border-radius:4px}
+        #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#58CC02,#1CB0F6,#CE82FF,#FFC800);z-index:101;width:0%;transition:width .05s linear}
+        #character{position:fixed;z-index:50;pointer-events:none;display:none;top:90px;left:50%;transform:translateX(-26px);transition:left .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease}
+        .char-body{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FFC800,#FF9500);border:3px solid #E0A800;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 15px rgba(255,200,0,.4);animation:charBounce 1.5s ease-in-out infinite}
+        @keyframes charBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        .char-shadow{width:36px;height:8px;background:rgba(0,0,0,.3);border-radius:50%;margin:3px auto 0;animation:shadowPulse 1.5s ease-in-out infinite}
+        @keyframes shadowPulse{0%,100%{transform:scaleX(1);opacity:.3}50%{transform:scaleX(.7);opacity:.5}}
+        .char-label{text-align:center;font-family:'Press Start 2P',cursive;font-size:6px;color:#FFC800;margin-top:3px}
+        .roadmap-container{position:relative;z-index:1}
+        .path-line{position:absolute;left:50%;top:0;bottom:0;width:4px;background:linear-gradient(180deg,rgba(88,204,2,.1) 0%,rgba(88,204,2,.6) 10%,rgba(88,204,2,.6) 90%,rgba(88,204,2,.1) 100%);transform:translateX(-50%)}
+        .path-line::before{content:'';position:absolute;top:0;left:-4px;width:12px;height:100%;background:linear-gradient(180deg,transparent,rgba(88,204,2,.1) 10%,rgba(88,204,2,.1) 90%,transparent);filter:blur(6px)}
+        .path-dots{position:absolute;left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%);overflow:hidden}
+        .path-dots::after{content:'';position:absolute;width:4px;height:40px;background:repeating-linear-gradient(180deg,#58CC02 0px,#58CC02 8px,transparent 8px,transparent 20px);animation:pathFlow 2s linear infinite}
+        @keyframes pathFlow{0%{transform:translateY(-40px)}100%{transform:translateY(0)}}
+        .milestone-node{position:absolute;left:50%;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;z-index:10;cursor:default;transition:all .3s}
+        .milestone-node.unlocked{background:linear-gradient(135deg,#58CC02,#46a302);border:3px solid #3d8c01;box-shadow:0 0 0 6px rgba(88,204,2,.2),0 0 30px rgba(88,204,2,.3)}
+        .milestone-node.current{background:linear-gradient(135deg,#FFC800,#FF9500);border:3px solid #E0A800;box-shadow:0 0 0 6px rgba(255,200,0,.2),0 0 30px rgba(255,200,0,.3);animation:nodePulse 2s ease-in-out infinite}
+        @keyframes nodePulse{0%,100%{box-shadow:0 0 0 6px rgba(255,200,0,.2),0 0 30px rgba(255,200,0,.3)}50%{box-shadow:0 0 0 10px rgba(255,200,0,.1),0 0 50px rgba(255,200,0,.4)}}
+        .milestone-node.boss{background:linear-gradient(135deg,#CE82FF,#9B30FF);border:3px solid #7B1FA2;box-shadow:0 0 0 6px rgba(206,130,255,.2),0 0 30px rgba(206,130,255,.3);animation:bossGlow 3s ease-in-out infinite}
+        @keyframes bossGlow{0%,100%{box-shadow:0 0 0 6px rgba(206,130,255,.2),0 0 30px rgba(206,130,255,.3)}50%{box-shadow:0 0 0 12px rgba(206,130,255,.1),0 0 60px rgba(206,130,255,.5)}}
+        .milestone-card{position:relative;max-width:420px;width:100%;background:rgba(26,26,46,.85);backdrop-filter:blur(12px);border:1px solid rgba(88,204,2,.2);border-radius:20px;padding:28px;opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.16,1,.3,1)}
+        .milestone-card.visible{opacity:1;transform:translateY(0)}
+        .milestone-card.left{margin-right:auto;margin-left:20px}
+        .milestone-card.right{margin-left:auto;margin-right:20px}
+        .milestone-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:20px 20px 0 0}
+        .milestone-card.green::before{background:linear-gradient(90deg,#58CC02,#7FEF3A)}
+        .milestone-card.blue::before{background:linear-gradient(90deg,#1CB0F6,#4DC9FF)}
+        .milestone-card.purple::before{background:linear-gradient(90deg,#CE82FF,#E0A0FF)}
+        .milestone-card.gold::before{background:linear-gradient(90deg,#FFC800,#FFE066)}
+        .achievement-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:10px;background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.3);font-size:12px;color:#FFC800}
+        .skill-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:rgba(28,176,246,.1);border:1px solid rgba(28,176,246,.2);font-size:11px;color:#1CB0F6}
+        .xp-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:rgba(88,204,2,.1);border:1px solid rgba(88,204,2,.3);font-size:11px;color:#58CC02;font-family:'Press Start 2P',cursive}
+        .loot-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:rgba(206,130,255,.1);border:1px solid rgba(206,130,255,.2);font-size:11px;color:#CE82FF}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ── Side Quest Branch ── */
+        .sq-branch{position:absolute;z-index:8}
+        .sq-branch-left{left:10px;width:calc(50% - 70px)}
+        .sq-branch-right{left:calc(50% + 35px);width:calc(50% - 70px)}
+        .sq-branch-line{position:absolute;width:2px;background:rgba(206,130,255,.25);border-radius:1px}
+        .sq-branch-left .sq-branch-line{right:12px}
+        .sq-branch-right .sq-branch-line{left:12px}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
+        .sq-dot{position:relative;display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;opacity:0;transform:translateX(-20px);transition:opacity .4s,transform .4s}
+        .sq-branch-right .sq-dot{transform:translateX(20px)}
+        .sq-dot.revealed{opacity:1;transform:translateX(0)}
+        .sq-dot:hover{z-index:99}
+        .sq-dot:hover .sq-dot-node{transform:scale(1.25);box-shadow:0 0 16px rgba(206,130,255,.5)}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+        /* ── Dot Node: circle + tooltip INSIDE it ── */
+        .sq-dot-node{position:relative;width:30px;height:30px;min-width:30px;border-radius:50%;background:rgba(26,26,46,.95);border:2px solid rgba(206,130,255,.4);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .25s;z-index:5}
+        .sq-dot.completed .sq-dot-node{background:rgba(88,204,2,.15);border-color:rgba(88,204,2,.5)}
+        .sq-dot.capstone .sq-dot-node{background:rgba(255,75,75,.15);border-color:rgba(255,75,75,.5)}
+        .sq-dot.legendary .sq-dot-node{background:rgba(255,200,0,.15);border-color:rgba(255,200,0,.5);animation:legendaryPulse 2s ease-in-out infinite}
+        @keyframes legendaryPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,200,0,0)}50%{box-shadow:0 0 0 6px rgba(255,200,0,.2)}}
+        .sq-dot.active-sq .sq-dot-node{background:rgba(28,176,246,.15);border-color:rgba(28,176,246,.5)}
+        .sq-dot-label{font-size:9px;color:#7b7b9b;transition:color .2s;white-space:nowrap;font-weight:600}
+        .sq-dot:hover .sq-dot-label{color:#e0e0e0}
+        .sq-dot.legendary .sq-dot-label{color:#FFC800}
+        .sq-dot.capstone .sq-dot-label{color:#FF4B4B}
+        .sq-dot.highlighted .sq-dot-node{filter:brightness(1.4);transform:scale(1.08)}
+        .sq-dot.highlighted.completed .sq-dot-node{box-shadow:0 0 14px rgba(88,204,2,.45)}
+        .sq-dot.highlighted.capstone .sq-dot-node{box-shadow:0 0 14px rgba(255,75,75,.45)}
+        .sq-dot.highlighted.legendary .sq-dot-node{box-shadow:0 0 14px rgba(255,200,0,.45)}
+        .sq-dot.highlighted.active-sq .sq-dot-node{box-shadow:0 0 14px rgba(28,176,246,.45)}
+        .sq-dot.highlighted .sq-dot-label{color:#d0d0d0}
+        .sq-dot.highlighted.legendary .sq-dot-label{color:#FFE066}
+        .sq-dot.highlighted.capstone .sq-dot-label{color:#FF7878}
+        .sq-dot.highlighted.active-sq .sq-dot-label{color:#4DC9FF}
+        .sq-dot.highlighted ~ .sq-branch-line,.sq-branch:has(.sq-dot.highlighted) .sq-branch-line{background:rgba(206,130,255,.5)!important}
 
-        /* Animated name styles */
-        .intro span {
-            color: var(--accent);
-            position: relative;
-            display: inline-block;
-        }
+        /* ── Tooltip: RIGHT NEXT to the circle, connector line bridges gap ── */
+        .sq-tooltip{position:absolute;width:260px;background:rgba(8,8,20,.98);backdrop-filter:blur(20px);border:1.5px solid rgba(206,130,255,.6);border-radius:12px;padding:14px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:9999;box-shadow:0 12px 40px rgba(0,0,0,.8),0 0 20px rgba(206,130,255,.15)}
+        /* Left branch: tooltip extends RIGHT from circle (toward center) */
+        .sq-branch-left .sq-tooltip{left:calc(100% + 6px);top:50%;transform:translateY(-50%)}
+        /* Right branch: tooltip extends LEFT from circle (toward center) */
+        .sq-branch-right .sq-tooltip{right:calc(100% + 6px);top:50%;transform:translateY(-50%)}
+        .sq-dot:hover .sq-tooltip{opacity:1;pointer-events:auto}
+        /* Connector line: bridges the 6px gap between circle edge and tooltip */
+        .sq-tooltip::after{content:'';position:absolute;width:6px;height:2px;background:rgba(206,130,255,.7);border-radius:1px}
+        .sq-branch-left .sq-tooltip::after{left:-6px;top:50%;transform:translateY(-50%)}
+        .sq-branch-right .sq-tooltip::after{right:-6px;top:50%;transform:translateY(-50%)}
 
-        .intro span::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -10%;
-            width: 120%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(0, 255, 255, 0.4),
-                transparent
-            );
-            animation: slide-glow 3s linear infinite;
+        .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
+        .modal-overlay.active{opacity:1;pointer-events:auto}
+        .modal-content{background:rgba(14,14,30,.98);backdrop-filter:blur(20px);border:1px solid rgba(206,130,255,.4);border-radius:20px;padding:32px;max-width:520px;width:100%;transform:scale(.9) translateY(20px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-height:80vh;overflow-y:auto}
+        .modal-overlay.active .modal-content{transform:scale(1) translateY(0)}
+        .inv-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;background:rgba(26,26,46,.6);border:1px solid rgba(28,176,246,.15);border-radius:12px;transition:all .3s;cursor:default}
+        .inv-slot:hover{border-color:rgba(28,176,246,.5);background:rgba(28,176,246,.05);transform:translateY(-2px)}
+        .toast{position:fixed;top:80px;right:20px;z-index:200;padding:16px 24px;border-radius:12px;background:rgba(26,26,46,.95);backdrop-filter:blur(12px);border:1px solid rgba(88,204,2,.3);transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:12px}
+        .toast.visible{transform:translateX(0)}
+        .section-header{text-align:center;padding:60px 20px 40px}
+        .section-header h2{font-family:'Press Start 2P',cursive;font-size:18px;color:#FFC800;text-shadow:0 0 20px rgba(255,200,0,.3)}
+        .progress-dot{width:8px;height:8px;border-radius:50%;background:#2a2a4e;transition:all .3s}
+        .progress-dot.active{background:#58CC02;box-shadow:0 0 8px rgba(88,204,2,.5)}
+        .level-up-flash{position:fixed;top:0;left:0;width:100%;height:100%;z-index:150;pointer-events:none;opacity:0;transition:opacity .3s}
+        .level-up-flash.active{opacity:1;background:rgba(88,204,2,.08)}
+        .particle{position:fixed;width:3px;height:3px;border-radius:50%;pointer-events:none;z-index:0;animation:floatUp linear infinite}
+        @keyframes floatUp{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+        @media(max-width:768px){
+            .path-line,.path-dots{left:24px}.milestone-node{left:24px!important}
+            .milestone-card{max-width:100%!important;margin-left:56px!important;margin-right:12px!important}
+            #character{display:none}.xp-bar-outer{width:120px}.start-btn{font-size:11px;padding:14px 32px}
+            .sq-branch{position:relative!important;left:56px!important;width:calc(100% - 68px)!important;top:auto!important}
+            .sq-branch-line{display:none}
+            .sq-tooltip{width:220px!important}
+            .sq-branch-left .sq-tooltip,.sq-branch-right .sq-tooltip{left:0!important;right:auto!important;top:calc(100% + 6px)!important;transform:none!important}
+            .sq-tooltip::after{display:none}
         }
-
-        @keyframes slide-glow {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        /* Updated nav styles with fancy icons */
-        .nav {
-            display: flex;
-            gap: 2.5rem;
-            margin-top: 2rem;
-        }
-
-        .nav a {
-            color: var(--text);
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            position: relative;
-        }
-
-        .nav a i {
-            font-size: 1.5rem;
-        }
-
-        .nav a::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 0.5rem;
-            background: var(--gray);
-            border-radius: 4px;
-            font-size: 0.9rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .nav a:hover {
-            color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .nav a:hover::after {
-            opacity: 1;
-            visibility: visible;
-            top: 120%;
-        }
-
-        .nav a i {
-            transition: transform 0.3s ease;
-        }
-
-        .nav a:hover i {
-            transform: scale(1.2);
-        }
-
-        /* Rest of your existing styles */
-        header {
-            padding: 4rem 0;
-        }
-
-        .intro {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .subtext {
-            font-size: 1.2rem;
-            opacity: 0.7;
-            max-width: 600px;
-        }
-
-        .projects {
-            margin: 4rem 0;
-        }
-
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .project {
-            background: var(--gray);
-            padding: 2rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .project:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.1);
-        }
-
-        .project-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--accent);
-        }
-
-        .project-description {
-            margin-bottom: 1.5rem;
-            opacity: 0.8;
-        }
-
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .tech {
-            background: rgba(0, 255, 255, 0.1);
-            color: var(--accent);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .project-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .project-links a {
-            color: var(--text);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
-
-        .project-links a:hover {
-            opacity: 1;
-            color: var(--accent);
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin: 4rem 0;
-            padding: 2rem 0;
-            border-top: 1px solid var(--gray);
-            border-bottom: 1px solid var(--gray);
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            opacity: 0.7;
-        }
-
-        footer {
-            padding: 4rem 0;
-            text-align: center;
-            opacity: 0.7;
-        }
-
-        @media (max-width: 768px) {
-            .intro {
-                font-size: 2rem;
-            }
-
-            .stats {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#0a0a1a}::-webkit-scrollbar-thumb{background:#2a2a4e;border-radius:3px}
     </style>
 </head>
 <body>
-    <header class="container">
-        <h1 class="intro">Hey, i'm <span>Brabeem</span></h1>
-        <p class="subtext">Backend dev who writes clean go code and builds cool stuff. minimal solutions to complex problems.</p>
-        <nav class="nav">
-            <a href="#work" data-text="work"><i class="fas fa-laptop-code"></i></a>
-            <a href="https://github.com/brabeem" data-text="github"><i class="fab fa-github"></i></a>
-            <a href="mailto:brabeem123@gmail.com" data-text="hit me up"><i class="fas fa-paper-plane"></i></a>
-        </nav>
-    </header>
+<canvas id="stars-canvas"></canvas>
+<div id="level-up-flash" class="level-up-flash"></div>
+<div id="scroll-progress"></div>
+<div id="toast" class="toast"><span style="font-size:24px">🏆</span><div><div class="pixel-font" style="font-size:8px;color:#58CC02">MILESTONE REACHED</div><div id="toast-text" style="font-size:13px;color:#fff;margin-top:4px"></div></div></div>
 
-    <main class="container">
-        <section class="stats">
-            <div class="stat">
-                <div class="stat-number">1M+</div>
-                <div class="stat-label">requests/day</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">99.9%</div>
-                <div class="stat-label">uptime</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">2+</div>
-                <div class="stat-label">years with go and python</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">&lt;30ms</div>
-                <div class="stat-label">avg response</div>
-            </div>
-        </section>
+<div id="sq-modal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal-content">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:12px"><span id="modal-emoji" style="font-size:36px"></span><div><div id="modal-type" class="pixel-font" style="font-size:8px"></div><h3 id="modal-title" style="font-size:18px;font-weight:800;color:#fff;margin-top:4px"></h3></div></div>
+            <button onclick="closeModal()" style="background:none;border:none;color:#6b7280;font-size:24px;cursor:pointer" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#6b7280'">×</button>
+        </div>
+        <div id="modal-year" style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2"></div>
+        <div id="modal-desc" style="font-size:14px;color:#c0c0c0;line-height:1.8;margin-bottom:16px"></div>
+        <div id="modal-skills" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span id="modal-xp" class="xp-badge"></span>
+            <a id="modal-link" href="#" target="_blank" style="display:none;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(28,176,246,.1);border:1px solid rgba(28,176,246,.3);color:#1CB0F6;text-decoration:none;font-size:12px;font-weight:600;transition:all .2s" onmouseenter="this.style.background='rgba(28,176,246,.2)'" onmouseleave="this.style.background='rgba(28,176,246,.1)'"><span class="iconify" data-icon="lucide:external-link" style="font-size:14px"></span> View</a>
+        </div>
+    </div>
+</div>
 
-        <section id="work" class="projects">
-            <div class="project-grid">
-                <div class="project">
-                    <h3 class="project-title">Myra-Erp</h3>
-                    <p class="project-description">Application focused on day to day cooperative transaction and reporting. Creates report from billions of data within seconds. Its used by 2000+ Cooperatives all over Nepal. </p>
-                    <div class="tech-stack">
-                        <span class="tech">go</span>
-                        <span class="tech">graphql</span>
-                        <span class="tech">redis</span>
-                        <span class="tech">Ti-db</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="http://myra-prod.dev.myraerp.com"><i class="fas fa-external-link-alt"></i> demo</a>
-                    </div>
-                </div>
+<!-- START SCREEN -->
+<div id="start-screen">
+    <div style="text-align:center;padding:20px">
+        <div style="margin-bottom:32px;animation:charBounce 1.5s ease-in-out infinite"><div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#FFC800,#FF9500);border:4px solid #E0A800;display:flex;align-items:center;justify-content:center;font-size:50px;margin:0 auto;box-shadow:0 0 40px rgba(255,200,0,.3)">🧙‍♂️</div></div>
+        <h1 class="pixel-font title-glow" style="font-size:28px;color:#58CC02;line-height:1.6;margin-bottom:8px">BRABEEM'S</h1>
+        <h1 class="pixel-font title-glow" style="font-size:36px;color:#58CC02;line-height:1.6;margin-bottom:24px">QUEST</h1>
+        <p style="color:#6b7280;font-size:14px;margin-bottom:40px;letter-spacing:2px">BACKEND DEVELOPER • AI ENTHUSIAST • SYSTEM ARCHITECT</p>
+        <button class="start-btn" onclick="startGame()">▶ START JOURNEY</button>
+    </div>
+</div>
 
-                <div class="project">
-                    <h3 class="project-title">Video Moment Localizer</h3>
-                    <p class="project-description">Given a video and text , the application localizes the moment described by the text in the video.Improvised the state of the art and published paper for this work.</p>
-                    <div class="tech-stack">
-                        <span class="tech">Python</span>
-                        <span class="tech">Transformer</span>
-                        <span class="tech">Multimodel Learning</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/brabeem/Cross-modal-Contrastive-Learning-with-Asymmetric-Co-attention-Network-for-Video-Moment-Retrieval"><i class="fab fa-github"></i> Code</a>
-                        <a href="https://openaccess.thecvf.com/content/WACV2024W/Pretrain/papers/Panta_Cross-Modal_Contrastive_Learning_With_Asymmetric_Co-Attention_Network_for_Video_Moment_WACVW_2024_paper.pdf"><i class="fas fa-file"></i> Paper</a>
-                    </div>
-                </div>
+<!-- HUD -->
+<div id="game-hud">
+    <div style="display:flex;align-items:center;gap:12px"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#FFC800,#FF9500);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #E0A800">🧙‍♂️</div><div><div class="pixel-font" style="font-size:8px;color:#FFC800">BRABEEM</div><div style="font-size:10px;color:#6b7280" id="hud-level">LVL 1</div></div></div>
+    <div style="display:flex;align-items:center;gap:8px"><span class="pixel-font" style="font-size:7px;color:#58CC02" id="hud-xp">0 XP</span><div class="xp-bar-outer"><div class="xp-bar-inner" id="hud-xp-bar"></div></div></div>
+    <div style="display:flex;gap:6px" id="hud-dots"><div class="progress-dot active"></div><div class="progress-dot"></div><div class="progress-dot"></div><div class="progress-dot"></div></div>
+</div>
 
-                <div class="project">
-                    <h3 class="project-title">Dodgeball Game Bot</h3>
-                    <p class="project-description">Improvised MADDPG by adding self-play and cirriculum learning. Achieved collaborative and competitive bot game play in unity dodgeball environment.</p>
-                    <div class="tech-stack">
-                        <span class="tech">Python</span>
-                        <span class="tech">Unity</span>
-                        <span class="tech">Reinforcement Learning</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/brabeem/DodgeBall_MA_RL"><i class="fab fa-github"></i> code</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+<!-- CHARACTER -->
+<div id="character"><div class="char-body">🧙‍♂️</div><div class="char-shadow"></div><div class="char-label">LVL <span id="char-level">1</span></div></div>
 
-    <footer>
-        <p>Minimal effort. Maximum impact </p>
-    </footer>
+<!-- MAIN -->
+<main id="main-content" style="display:none">
+<section class="roadmap-container" style="padding:40px 20px 80px;max-width:900px;margin:0 auto;position:relative">
+<div class="path-line"></div><div class="path-dots"></div>
+
+<!-- LVL 1 -->
+<div class="milestone-section" style="position:relative;padding:60px 0 20px;min-height:260px" data-xp="2000" data-level="1">
+    <div class="milestone-node unlocked" style="top:80px">🎓</div>
+    <div class="milestone-card left green" style="margin-top:40px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div><span class="pixel-font" style="font-size:8px;color:#1CB0F6">LVL 1</span><h3 style="font-size:20px;font-weight:800;color:#fff;margin-top:4px">The Origin</h3></div><span class="xp-badge">+2000 XP</span></div>
+        <p style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2">+2 SCIENCE • TRINITY INT'L COLLEGE</p>
+        <div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:start;gap:10px"><span style="font-size:16px">📜</span><div><div style="font-size:13px;color:#e0e0e0;font-weight:600">Higher Secondary Education</div><div style="font-size:12px;color:#6b7280">2016 – 2018</div></div></div><div style="display:flex;flex-wrap:wrap;gap:6px"><span class="achievement-badge">🏆 GPA 3.59/4.0</span><span class="achievement-badge">💰 100% Scholarship</span></div></div>
+    </div>
+</div>
+
+<!-- LVL 2 + 9 SQ -->
+<div class="milestone-section" style="position:relative;padding:60px 0 20px;min-height:500px" data-xp="6000" data-level="2">
+    <div class="milestone-node unlocked" style="top:80px">⚔️</div>
+    <div class="milestone-card right blue" style="margin-top:40px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div><span class="pixel-font" style="font-size:8px;color:#1CB0F6">LVL 2</span><h3 style="font-size:20px;font-weight:800;color:#fff;margin-top:4px">The Academy</h3></div><span class="xp-badge">+6000 XP</span></div>
+        <p style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2">BE IN ECIE • IOE PULCHOWK</p>
+        <div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:start;gap:10px"><span style="font-size:16px">📜</span><div><div style="font-size:13px;color:#e0e0e0;font-weight:600">ECIE Engineering</div><div style="font-size:12px;color:#6b7280">2019 – 2023 • 74.73%</div></div></div><div style="display:flex;flex-wrap:wrap;gap:6px"><span class="achievement-badge">💰 100% Merit Scholarship</span><span class="achievement-badge">🥈 openIMIS Datathon</span></div></div>
+        <div style="margin-top:16px"><div style="font-size:10px;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">Core Skill Tree</div><div style="display:flex;flex-wrap:wrap;gap:6px"><span class="skill-tag">ML</span><span class="skill-tag">Deep Learning</span><span class="skill-tag">RL</span><span class="skill-tag">CV</span><span class="skill-tag">NLP</span><span class="skill-tag">DSA</span></div></div>
+    </div>
+    <!-- LEFT: 9 SQ — tooltip INSIDE .sq-dot-node -->
+    <div class="sq-branch sq-branch-left" style="top:140px">
+        <div class="sq-branch-line" style="top:0;bottom:0"></div>
+        <div style="display:flex;flex-direction:column;gap:5px;padding:0 26px 0 0">
+            <div class="sq-dot completed" onclick="openModal('academy',0)"><div class="sq-dot-node">🐦<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">2ND SEM • 2019</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">C++ game — first real program</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Bird Hunter</div></div>
+            <div class="sq-dot completed" onclick="openModal('academy',1)"><div class="sq-dot-node">🐍<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:4px">SELF-TAUGHT • 2019</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Not in course — gateway to AI</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Learned Python</div></div>
+            <div class="sq-dot completed" onclick="openModal('academy',2)"><div class="sq-dot-node">📢<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">DBMS PROJECT • 2020</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Auth, groups, posts, likes, comments</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">AnnounceMe</div></div>
+            <div class="sq-dot completed" onclick="openModal('academy',3)"><div class="sq-dot-node">📚<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:4px">COURSEWORK • 2020-21</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">ML, NLP, CV — the building blocks</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">ML / NLP / CV</div></div>
+            <div class="sq-dot completed" onclick="openModal('academy',4)"><div class="sq-dot-node">🧠<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:4px">ANDREW NG • 2021</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">YOLO, RNN music gen, CNNs</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Deep Learning</div></div>
+            <div class="sq-dot completed" onclick="openModal('academy',5)"><div class="sq-dot-node">🎮<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">UDACITY • 2021-22</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">DQN, policy gradients, actor-critic</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">RL Nanodegree</div></div>
+            <div class="sq-dot capstone" onclick="openModal('academy',6)"><div class="sq-dot-node">🤖<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#FF4B4B;margin-bottom:4px">CAPSTONE • 2022-23</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">MADDPG capture-the-flag, self-play</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">MADDPG AI</div></div>
+            <div class="sq-dot completed" onclick="openModal('academy',7)"><div class="sq-dot-node">⚡<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">SELF-DIRECTED • 2022</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Full transformer from scratch in PyTorch</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Transformer</div></div>
+            <div class="sq-dot legendary" onclick="openModal('academy',8)"><div class="sq-dot-node">📜<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#FFC800;margin-bottom:4px">LEGENDARY • 2022-23</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">SOTA on TACoS, 30% fewer params</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Published Paper</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- LVL 3 + BRODA -->
+<div class="milestone-section" style="position:relative;padding:60px 0 20px;min-height:400px" data-xp="8000" data-level="3">
+    <div class="milestone-node current" style="top:80px">🏦</div>
+    <div class="milestone-card left gold" style="margin-top:40px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div><span class="pixel-font" style="font-size:8px;color:#FFC800">LVL 3</span><h3 style="font-size:20px;font-weight:800;color:#fff;margin-top:4px">First Quest</h3><p style="font-size:11px;color:#6b7280;margin-top:2px">Backend Engineer • Rara Labs</p></div><span class="xp-badge">+8000 XP</span></div>
+        <p style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2">JAN 2023 – DEC 2024 • ON-SITE</p>
+        <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:start;gap:10px"><span style="color:#58CC02;font-size:12px">▸</span><div style="font-size:13px;color:#c0c0c0">Built <span style="color:#fff;font-weight:600">Central Banking System</span></div></div>
+            <div style="display:flex;align-items:start;gap:10px"><span style="color:#58CC02;font-size:12px">▸</span><div style="font-size:13px;color:#c0c0c0">Designed <span style="color:#fff;font-weight:600">Multi-tenant Architecture</span></div></div>
+            <div style="display:flex;align-items:start;gap:10px"><span style="color:#58CC02;font-size:12px">▸</span><div style="font-size:13px;color:#c0c0c0">Significantly <span style="color:#58CC02;font-weight:600">optimized performance</span></div></div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px"><span class="loot-tag">🐹 Go</span><span class="loot-tag">🐘 PostgreSQL</span><span class="loot-tag">🔗 REST</span><span class="loot-tag">📊 GraphQL</span><span class="loot-tag">🏦 ERP</span></div>
+    </div>
+    <div class="sq-branch sq-branch-right" style="top:160px">
+        <div class="sq-branch-line" style="top:0;height:50px"></div>
+        <div style="display:flex;flex-direction:column;gap:5px;padding:0 0 0 26px">
+            <div class="sq-dot completed" onclick="openModal('firstquest',0)"><div class="sq-dot-node">🫂<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">SIDE PROJECT • 2023-24</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Social get-together — activities, nearby people</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Broda</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- LVL 5 + 5 SQ -->
+<div class="milestone-section" style="position:relative;padding:60px 0 20px;min-height:500px" data-xp="10000" data-level="5">
+    <div class="milestone-node boss" style="top:80px">🐉</div>
+    <div class="milestone-card right purple" style="margin-top:40px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div><span class="pixel-font" style="font-size:8px;color:#CE82FF">LVL 5 • BOSS FIGHT</span><h3 style="font-size:20px;font-weight:800;color:#fff;margin-top:4px">The Big Leagues</h3><p style="font-size:11px;color:#6b7280;margin-top:2px">Full Stack Developer • NubeIO</p></div><span class="xp-badge">+10000 XP</span></div>
+        <p style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2">JAN 2025 – PRESENT • REMOTE</p>
+        <p style="font-size:12px;color:#CE82FF;margin-bottom:16px;font-style:italic">⚔️ Dev → Infra → Deploy → Scale → Monitor → Everything</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:rgba(206,130,255,.05);border:1px solid rgba(206,130,255,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:6px">PHASE 1: DATA</div><div style="font-size:12px;color:#c0c0c0">Optimized <span style="color:#fff;font-weight:600">IoT sensor data</span> — TimescaleDB</div></div>
+            <div style="background:rgba(28,176,246,.05);border:1px solid rgba(28,176,246,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:6px">PHASE 2: RE-ARCH</div><div style="font-size:12px;color:#c0c0c0">Re-architected <span style="color:#fff;font-weight:600">NATS leaf-node</span></div></div>
+            <div style="background:rgba(255,75,75,.05);border:1px solid rgba(255,75,75,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#FF4B4B;margin-bottom:6px">PHASE 3: BOSS</div><div style="font-size:12px;color:#c0c0c0">Debugged <span style="color:#fff;font-weight:600">RAFT consensus</span></div></div>
+            <div style="background:rgba(88,204,2,.05);border:1px solid rgba(88,204,2,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#58CC02;margin-bottom:6px">PHASE 4: INFRA</div><div style="font-size:12px;color:#c0c0c0">Deployed <span style="color:#fff;font-weight:600">EKS + Prometheus + Grafana</span></div></div>
+            <div style="background:rgba(255,200,0,.05);border:1px solid rgba(255,200,0,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#FFC800;margin-bottom:6px">PHASE 5: SECURITY</div><div style="font-size:12px;color:#c0c0c0"><span style="color:#fff;font-weight:600">Vault PKI</span> + <span style="color:#fff;font-weight:600">Locust</span> load testing</div></div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px"><span class="loot-tag">🐹 Go</span><span class="loot-tag">📊 TimescaleDB</span><span class="loot-tag">📡 NATS</span><span class="loot-tag">☸️ K8s</span><span class="loot-tag">☁️ AWS</span><span class="loot-tag">🔒 Vault</span><span class="loot-tag">📈 Prometheus</span></div>
+    </div>
+    <div class="sq-branch sq-branch-left" style="top:140px">
+        <div class="sq-branch-line" style="top:0;bottom:0"></div>
+        <div style="display:flex;flex-direction:column;gap:5px;padding:0 26px 0 0">
+            <div class="sq-dot active-sq" onclick="openModal('bigleagues',0)"><div class="sq-dot-node">☁️<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:4px">IN PROGRESS • 2025</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">AWS EKS, K8s, Helm</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">AWS / K8s / Helm</div></div>
+            <div class="sq-dot active-sq" onclick="openModal('bigleagues',1)"><div class="sq-dot-node">🦀<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#FFC800;margin-bottom:4px">CURRENTLY • 2025</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Rust — memory safety, concurrency</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Learning Rust</div></div>
+            <div class="sq-dot active-sq" onclick="openModal('bigleagues',2)"><div class="sq-dot-node">📖<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">STUDYING • 2025</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">DDIA + Microservices in Go</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">DDIA & Microservices</div></div>
+            <div class="sq-dot active-sq" onclick="openModal('bigleagues',3)"><div class="sq-dot-node">💻<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:4px">TRAINING • 2025</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">LeetCode — algorithms & DS</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">LeetCode</div></div>
+            <div class="sq-dot active-sq" onclick="openModal('bigleagues',4)"><div class="sq-dot-node">✍️<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:4px">CREATING • 2025</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Medium — backend, distributed systems, AI</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Medium Articles</div></div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section style="padding:40px 20px 80px;max-width:900px;margin:0 auto">
+    <div class="section-header"><h2>ACHIEVEMENTS</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px">
+        <div style="background:rgba(255,200,0,.05);border:1px solid rgba(255,200,0,.2);border-radius:16px;padding:24px;text-align:center;transition:all .3s" onmouseenter="this.style.transform='translateY(-4px)'" onmouseleave="this.style.transform='translateY(0)'"><div style="font-size:48px;margin-bottom:12px">🥈</div><div class="pixel-font" style="font-size:9px;color:#FFC800;margin-bottom:8px">2ND PLACE</div><div style="font-size:14px;color:#fff;font-weight:600">openIMIS Datathon</div></div>
+        <div style="background:rgba(88,204,2,.05);border:1px solid rgba(88,204,2,.2);border-radius:16px;padding:24px;text-align:center;transition:all .3s" onmouseenter="this.style.transform='translateY(-4px)'" onmouseleave="this.style.transform='translateY(0)'"><div style="font-size:48px;margin-bottom:12px">💎</div><div class="pixel-font" style="font-size:9px;color:#58CC02;margin-bottom:8px">100% SCHOLARSHIP</div><div style="font-size:14px;color:#fff;font-weight:600">BE • IOE Pulchowk</div></div>
+        <div style="background:rgba(28,176,246,.05);border:1px solid rgba(28,176,246,.2);border-radius:16px;padding:24px;text-align:center;transition:all .3s" onmouseenter="this.style.transform='translateY(-4px)'" onmouseleave="this.style.transform='translateY(0)'"><div style="font-size:48px;margin-bottom:12px">💎</div><div class="pixel-font" style="font-size:9px;color:#1CB0F6;margin-bottom:8px">100% SCHOLARSHIP</div><div style="font-size:14px;color:#fff;font-weight:600">+2 • Trinity Int'l</div></div>
+    </div>
+</section>
+
+<!-- INVENTORY -->
+<section style="padding:40px 20px 80px;max-width:900px;margin:0 auto">
+    <div class="section-header"><h2>INVENTORY</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px">
+        <div class="inv-slot"><span style="font-size:24px">🐹</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">GoLang</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🐍</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Python</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🦀</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Rust</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🐘</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">PostgreSQL</span></div>
+        <div class="inv-slot"><span style="font-size:24px">⚡</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">TiDB</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🍃</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">MongoDB</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🔗</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">REST</span></div>
+        <div class="inv-slot"><span style="font-size:24px">📊</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">GraphQL</span></div>
+        <div class="inv-slot"><span style="font-size:24px">⚡</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">gRPC</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🐳</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Docker</span></div>
+        <div class="inv-slot"><span style="font-size:24px">☸️</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Kubernetes</span></div>
+        <div class="inv-slot"><span style="font-size:24px">⛵</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Helm</span></div>
+        <div class="inv-slot"><span style="font-size:24px">☁️</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">AWS</span></div>
+        <div class="inv-slot"><span style="font-size:24px">📡</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">NATS</span></div>
+        <div class="inv-slot"><span style="font-size:24px">📈</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Prometheus</span></div>
+        <div class="inv-slot"><span style="font-size:24px">🔧</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Git</span></div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section style="padding:80px 20px 120px;max-width:600px;margin:0 auto;text-align:center">
+    <div style="font-size:60px;margin-bottom:20px">🎮</div>
+    <h2 class="pixel-font" style="font-size:18px;color:#58CC02;text-shadow:0 0 20px rgba(88,204,2,.3);margin-bottom:16px">QUEST CONTINUES...</h2>
+    <p style="font-size:14px;color:#6b7280;margin-bottom:32px;line-height:1.7">New quests, new challenges. Always building.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px">
+        <a href="mailto:brabeem123@gmail.com" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(88,204,2,.1);border:1px solid rgba(88,204,2,.3);color:#58CC02;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:mail" style="font-size:16px"></span>Email</a>
+        <a href="https://github.com/brabeem" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(28,176,246,.1);border:1px solid rgba(28,176,246,.3);color:#1CB0F6;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:github" style="font-size:16px"></span>GitHub</a>
+        <a href="https://www.linkedin.com/in/brabeem-sapkota-12b843200/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(206,130,255,.1);border:1px solid rgba(206,130,255,.3);color:#CE82FF;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:linkedin" style="font-size:16px"></span>LinkedIn</a>
+        <a href="https://medium.com/@brabimsapkota" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.3);color:#FFC800;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:pen-line" style="font-size:16px"></span>Medium</a>
+    </div>
+    <div style="font-size:11px;color:#4b5563">📍 Kathmandu, Nepal • 📞 +977-9861584544</div>
+    <div style="margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.05)"><div class="pixel-font" style="font-size:7px;color:#2a2a4e">TOTAL XP: <span id="footer-xp">0</span> • LVL <span id="footer-lvl">1</span></div></div>
+</section>
+</main>
+
+<script>
+const SQ={academy:[{emoji:'🐦',title:'Bird Hunter',type:'SIDE QUEST',typeColor:'#CE82FF',year:'2ND SEMESTER • 2019',desc:'A bird killing game built while learning C++ during my second semester. Simple but effective for understanding programming fundamentals — loops, conditionals, functions, and basic game loops. The first real program that felt alive.',skills:['C++','Game Dev','Programming Fundamentals'],link:'https://github.com/brabeem/bird_hunter',xp:500},{emoji:'🐍',title:'Learned Python',type:'SELF-TAUGHT',typeColor:'#1CB0F6',year:'SELF-DIRECTED • 2019',desc:'Python wasn\'t part of the course — only C and C++ were taught. Taught myself Python from scratch, opening the door to everything that followed. The single most important self-investment.',skills:['Python','Self-Learning'],link:null,xp:300},{emoji:'📢',title:'AnnounceMe',type:'SIDE QUEST',typeColor:'#CE82FF',year:'DBMS PROJECT • 2020',desc:'First application using a database. Built a full announcement platform with: Auth (signup/login/logout), Groups (create/join/view/enter), Posts (announcements, newest first), Likes (toggle "checks" — green/red), Comments. Databases became real.',skills:['Database Design','Auth','CRUD','SQL','Web Dev'],link:'https://github.com/brabeem/announceMe',xp:800},{emoji:'📚',title:'ML, NLP, CV',type:'COURSEWORK',typeColor:'#1CB0F6',year:'UNIVERSITY • 2020-2021',desc:'Studied Machine Learning, NLP, and Computer Vision. Built the theoretical and practical foundation for everything that followed.',skills:['ML','NLP','CV','Feature Engineering'],link:null,xp:1000},{emoji:'🧠',title:'Deep Learning Specialization',type:'COURSE',typeColor:'#1CB0F6',year:'ANDREW NG • 2021',desc:'Completed the Deep Learning specialization. Object detection (YOLO), RNN for music generation, CNNs, optimization, batch normalization. Deep learning clicked — not just frameworks, but the math behind every layer.',skills:['Deep Learning','CNNs','RNNs','Object Detection','Music Generation','Optimization'],link:null,xp:1500},{emoji:'🎮',title:'RL Nanodegree',type:'NANODEGREE',typeColor:'#CE82FF',year:'UDACITY • 2021-2022',desc:'Completed the Udacity RL Nanodegree. Trained many game bots: DQN, policy gradients, actor-critic. This directly inspired the MADDPG capstone project.',skills:['RL','DQN','Policy Gradients','Actor-Critic','Unity ML-Agents'],link:'https://github.com/brabeem/deep-reinforcement-learning',xp:2000},{emoji:'🤖',title:'MADDPG Capture the Flag AI',type:'CAPSTONE',typeColor:'#FF4B4B',year:'CAPSTONE • 2022-2023',desc:'Developed AI agents for capture-the-flag/dodgeball in Unity ML-Agents using MADDPG with self-play and curriculum learning. Achieved emergent competitive/cooperative behaviors. Explored DQN, PPO, A3C, DDPG before selecting MADDPG. Led algorithm design and taught RL math to teammates.',skills:['MADDPG','Self-Play','Curriculum Learning','Multi-Agent RL','Unity ML-Agents'],link:null,xp:3000},{emoji:'⚡',title:'Transformer from Scratch',type:'SIDE QUEST',typeColor:'#CE82FF',year:'SELF-DIRECTED • 2022',desc:'Implemented the full "Attention Is All You Need" architecture from scratch in PyTorch — multi-head self-attention, positional encoding, encoder-decoder blocks, training loop. No shortcuts. You can\'t modify what you don\'t understand.',skills:['PyTorch','Self-Attention','Positional Encoding','Encoder-Decoder','Transformers'],link:null,xp:2000},{emoji:'📜',title:'Video Moment Retrieval',type:'LEGENDARY QUEST',typeColor:'#FFC800',year:'PUBLISHED • 2022-2023',desc:'Published work on cross-modal contrastive learning with asymmetric co-attention for temporal video grounding. Led mathematical formulation. Implemented transformer from scratch. Literature survey (MSAT, mPLUG, ALBEF, MoCo, 2D-TAN). SOTA on TACoS with 30% fewer parameters.',skills:['Contrastive Learning','Co-Attention','VTC Loss','Vision-Language','Transformers','Research'],link:null,xp:5000,isPublished:true}],firstquest:[{emoji:'🫂',title:'Broda',type:'SIDE QUEST',typeColor:'#CE82FF',year:'SIDE PROJECT • 2023-2024',desc:'A social get-together platform where activities can be created and people nearby can see and join them. A community app for connecting people through shared activities and events.',skills:['Social Platform','Activity Creation','Geolocation','Community','Web Dev'],link:'https://github.com/SetGet-Solutions/broda',xp:1000}],bigleagues:[{emoji:'☁️',title:'AWS / Kubernetes / Helm',type:'IN PROGRESS',typeColor:'#1CB0F6',year:'LEARNING • 2025',desc:'Learning AWS (EKS), Kubernetes orchestration, and Helm chart management. Hands-on deployment, cluster management, and service orchestration.',skills:['AWS EKS','Kubernetes','Helm','Cloud Infra'],link:null,xp:500},{emoji:'🦀',title:'Learning Rust',type:'CURRENTLY LEARNING',typeColor:'#FFC800',year:'IN PROGRESS • 2025',desc:'Exploring Rust for systems programming — memory safety, concurrency, and performance-critical applications.',skills:['Rust','Systems Programming','Memory Safety','Concurrency'],link:null,xp:300},{emoji:'📖',title:'DDIA & Microservices in Go',type:'STUDYING',typeColor:'#CE82FF',year:'READING • 2025',desc:'Reading "Designing Data-Intensive Applications" by Martin Kleppmann and "Microservices in Go" — deepening understanding of distributed systems and microservice patterns.',skills:['Distributed Systems','Data Architecture','Microservices','System Design'],link:null,xp:400},{emoji:'💻',title:'LeetCode',type:'TRAINING',typeColor:'#1CB0F6',year:'ONGOING • 2025',desc:'Sharpening algorithm and data structure skills through regular LeetCode practice.',skills:['Algorithms','Data Structures','Problem Solving'],link:null,xp:200},{emoji:'✍️',title:'Medium Articles',type:'CREATING',typeColor:'#1CB0F6',year:'ONGOING • 2025',desc:'Writing technical articles on Medium about backend development, distributed systems, Go programming, and AI. Sharing knowledge from real-world production experience.',skills:['Technical Writing','Knowledge Sharing','Backend','Distributed Systems','Go'],link:'https://medium.com/@brabimsapkota',xp:300}]};
+function openModal(g,i){const q=SQ[g][i];document.getElementById('modal-emoji').textContent=q.emoji;document.getElementById('modal-type').textContent=q.type;document.getElementById('modal-type').style.color=q.typeColor;document.getElementById('modal-title').textContent=q.title;document.getElementById('modal-year').textContent=q.year;document.getElementById('modal-desc').textContent=q.desc;document.getElementById('modal-xp').textContent='+'+q.xp+' XP';const sk=document.getElementById('modal-skills');sk.innerHTML=q.skills.map(s=>'<span class="skill-tag">'+s+'</span>').join('');if(q.isPublished)sk.innerHTML+='<span class="achievement-badge">📰 Published</span>';const lnk=document.getElementById('modal-link');if(q.link){lnk.href=q.link;lnk.style.display='inline-flex';lnk.innerHTML='<span class="iconify" data-icon="lucide:external-link" style="font-size:14px"></span> View'}else lnk.style.display='none';document.getElementById('sq-modal').classList.add('active');playSound('click')}
+function closeModal(){document.getElementById('sq-modal').classList.remove('active')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+let audioCtx=null;function getAC(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+function playSound(t){try{const c=getAC();if(c.state==='suspended')c.resume();if(t==='ding'){[0,.12].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(i===0?880:1320,c.currentTime+d);g.gain.setValueAtTime(.15,c.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d+.6);o.start(c.currentTime+d);o.stop(c.currentTime+d+.6)})}else if(t==='levelup'){[523,659,784,1047].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='square';o.frequency.setValueAtTime(f,c.currentTime+i*.1);g.gain.setValueAtTime(.08,c.currentTime+i*.1);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.1+.3);o.start(c.currentTime+i*.1);o.stop(c.currentTime+i*.1+.3)})}else if(t==='click'){const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type='sine';o.frequency.setValueAtTime(600,c.currentTime);o.frequency.exponentialRampToValueAtTime(400,c.currentTime+.08);g.gain.setValueAtTime(.1,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.08);o.start(c.currentTime);o.stop(c.currentTime+.1)}}catch(e){}}
+
+const cv=document.getElementById('stars-canvas'),cx=cv.getContext('2d');let st=[];function rs(){cv.width=innerWidth;cv.height=innerHeight}rs();addEventListener('resize',rs);for(let i=0;i<150;i++)st.push({x:Math.random()*cv.width,y:Math.random()*cv.height,s:Math.random()*2+.5,o:Math.random()*.5+.1,t:Math.random()*Math.PI*2});function aS(){cx.clearRect(0,0,cv.width,cv.height);st.forEach(s=>{s.t+=.02;cx.beginPath();cx.arc(s.x,s.y,s.s,0,Math.PI*2);cx.fillStyle=`rgba(255,255,255,${s.o*(.5+.5*Math.sin(s.t))})`;cx.fill()});requestAnimationFrame(aS)}aS();
+
+let gameStarted=false,currentLevel=1;const milestoneXP=[2000,6000,8000,10000],milestoneNames=['The Origin','The Academy','First Quest','The Big Leagues'],MAX_XP=26000;const milestonesReached=new Set();let isAutoScrolling=false;
+
+function startGame(){gameStarted=true;document.getElementById('start-screen').classList.add('hidden');document.getElementById('main-content').style.display='block';document.getElementById('game-hud').classList.add('visible');document.getElementById('character').style.display='block';setTimeout(()=>{showToast('Journey Begins! 🌟');spawnConfetti(innerWidth/2,90);playSound('levelup')},600);setTimeout(()=>checkMilestones(),200)}
+function setXP(xp){const pct=Math.min(xp/MAX_XP*100,100);document.getElementById('hud-xp-bar').style.width=pct+'%';document.getElementById('hud-xp').textContent=xp+' XP';document.getElementById('footer-xp').textContent=xp}
+
+const character=document.getElementById('character');
+function updateCharacter() {
+    if (!gameStarted || innerWidth < 768) return;
+    
+    const sections = document.querySelectorAll('.milestone-section');
+    const lastSection = sections[sections.length - 1];
+    const lastBottom = lastSection.getBoundingClientRect().bottom;
+    
+    // Fade out character when scrolled past the timeline
+    if (milestonesReached.has(3) && lastBottom < 100) {
+        character.style.opacity = '0';
+        document.querySelectorAll('.sq-dot.highlighted').forEach(d => d.classList.remove('highlighted'));
+        return;
+    }
+    
+    character.style.opacity = '1';
+    character.style.top = '90px';
+    
+    // Find closest milestone node
+    let closestI = 0, closestD = Infinity;
+    sections.forEach((s, i) => {
+        const n = s.querySelector('.milestone-node');
+        if (!n) return;
+        const r = n.getBoundingClientRect();
+        const d = Math.abs(r.top - 90);
+        if (d < closestD) { closestD = d; closestI = i; }
+    });
+    
+    const centerX = innerWidth / 2;
+    const offset = closestI % 2 === 0 ? -70 : 70;
+    character.style.left = (centerX + offset - 26) + 'px';
+    
+    // Wave highlight: light dots individually as character passes them
+    const charCenter = 116; // 90px top + half of 52px char height
+    sections.forEach((section, i) => {
+        const branch = section.querySelector('.sq-branch');
+        if (!branch) return;
+        const dots = branch.querySelectorAll('.sq-dot.revealed');
+        dots.forEach(dot => {
+            if (i === closestI && closestD < 250) {
+                const dotRect = dot.getBoundingClientRect();
+                const dotCenter = dotRect.top + dotRect.height / 2;
+                const dist = Math.abs(dotCenter - charCenter);
+                dot.classList.toggle('highlighted', dist < 40);
+            } else {
+                dot.classList.remove('highlighted');
+            }
+        });
+    });
+}
+
+function checkMilestones(){if(!gameStarted||isAutoScrolling)return;const sections=document.querySelectorAll('.milestone-section');const charY=90;
+sections.forEach((section,index)=>{if(milestonesReached.has(index))return;const node=section.querySelector('.milestone-node');if(!node)return;const nodeRect=node.getBoundingClientRect();
+const sRect=section.getBoundingClientRect();const vis=sRect.top<innerHeight&&sRect.bottom>0;if(vis){const card=section.querySelector('.milestone-card');if(card&&!card.classList.contains('visible'))card.classList.add('visible');section.querySelectorAll('.sq-dot:not(.revealed)').forEach((d,i)=>setTimeout(()=>d.classList.add('revealed'),i*80))}
+if(nodeRect.top<=charY+5){milestonesReached.add(index);let delay=0;if(nodeRect.top<40){isAutoScrolling=true;scrollBy({top:Math.min(40-nodeRect.top+30,80),behavior:'smooth'});delay=350;setTimeout(()=>{isAutoScrolling=false},500)}
+setTimeout(()=>{const xp=milestoneXP[index];const cumXP=[...milestonesReached].sort((a,b)=>a-b).reduce((s,i)=>s+milestoneXP[i],0);currentLevel=[1,2,3,5][index];setXP(cumXP);document.getElementById('hud-level').textContent='LVL '+currentLevel;document.getElementById('char-level').textContent=currentLevel;document.getElementById('footer-lvl').textContent=currentLevel;triggerLevelUp();showToast(`${milestoneNames[index]} Complete! +${xp} XP`);const r=node.getBoundingClientRect();spawnConfetti(r.left+r.width/2,Math.max(r.top,60));document.querySelectorAll('#hud-dots .progress-dot')[index]?.classList.add('active');playSound(index===3?'levelup':'ding')},delay)}})}
+
+function triggerLevelUp(){const f=document.getElementById('level-up-flash');f.classList.add('active');setTimeout(()=>f.classList.remove('active'),300)}
+let toastTimeout;function showToast(t){const e=document.getElementById('toast');document.getElementById('toast-text').textContent=t;e.classList.add('visible');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>e.classList.remove('visible'),3000)}
+
+function spawnConfetti(x,y){const cols=['#58CC02','#1CB0F6','#FFC800','#CE82FF','#FF4B4B','#FF9500'];for(let i=0;i<30;i++){const p=document.createElement('div');p.style.cssText=`position:fixed;z-index:2000;pointer-events:none;left:${x}px;top:${y}px;width:${Math.random()*8+4}px;height:${Math.random()*8+4}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'2px'}`;document.body.appendChild(p);const a=Math.random()*Math.PI*2,v=Math.random()*200+100,dx=Math.cos(a)*v,dy=Math.sin(a)*v-200;let st=null;function an(ts){if(!st)st=ts;const el=(ts-st)/1000;p.style.left=x+dx*el+'px';p.style.top=y+dy*el+500*el*el+'px';p.style.transform=`rotate(${el*720}deg) scale(${Math.max(.3,1-el/1.5)})`;p.style.opacity=Math.max(0,1-el/1.5);if(el<1.5)requestAnimationFrame(an);else p.remove()}requestAnimationFrame(an)}}
+
+const pc=['#58CC02','#1CB0F6','#FFC800','#CE82FF'];for(let i=0;i<12;i++){setTimeout(()=>{const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'vw';p.style.background=pc[Math.floor(Math.random()*pc.length)];p.style.animationDuration=(Math.random()*10+10)+'s';p.style.animationDelay=(Math.random()*5)+'s';const sz=(Math.random()*3+1)+'px';p.style.width=sz;p.style.height=sz;document.body.appendChild(p);p.addEventListener('animationend',()=>{p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+10)+'s';p.style.animationDelay='0s';document.body.appendChild(p)})},i*500)}
+
+addEventListener('scroll',()=>{if(!isAutoScrolling){updateCharacter();checkMilestones()}const prog=Math.min(scrollY/(document.documentElement.scrollHeight-innerHeight),1);document.getElementById('scroll-progress').style.width=prog*100+'%'},{passive:true});
+addEventListener('keydown',e=>{if(e.key==='Enter'&&!gameStarted)startGame()});
+</script>
 </body>
 </html>
