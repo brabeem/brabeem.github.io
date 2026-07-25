@@ -27,12 +27,17 @@
         .xp-bar-inner{height:100%;background:linear-gradient(90deg,#58CC02,#7FEF3A);border-radius:7px;width:0%;position:relative;transition:width .8s cubic-bezier(.4,0,.2,1)}
         .xp-bar-inner::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:40%;background:rgba(255,255,255,.25);border-radius:4px}
         #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#58CC02,#1CB0F6,#CE82FF,#FFC800);z-index:101;width:0%;transition:width .05s linear}
-        #character{position:fixed;z-index:50;pointer-events:none;display:none;top:90px;left:50%;transform:translateX(-26px);transition:left .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease}
-        .char-body{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FFC800,#FF9500);border:3px solid #E0A800;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 15px rgba(255,200,0,.4);animation:charBounce 1.5s ease-in-out infinite}
+        #character{position:fixed;z-index:50;pointer-events:none;display:none;top:90px;left:50%;transform:translateX(-26px);transition:left .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease;perspective:200px}
+        .dice{width:52px;height:52px;transform-style:preserve-3d;position:relative}
+        .dice-face{position:absolute;width:52px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-weight:700;backface-visibility:hidden;border-radius:8px;border:2px solid rgba(255,255,255,.15);text-align:center;line-height:1.2}
+        .dice-face span{font-size:20px;margin-bottom:1px}
+        .front{transform:translateZ(26px)}.back{transform:rotateY(180deg) translateZ(26px)}
+        .right{transform:rotateY(90deg) translateZ(26px)}.left{transform:rotateY(-90deg) translateZ(26px)}
+        .top{transform:rotateX(90deg) translateZ(26px)}.bottom{transform:rotateX(-90deg) translateZ(26px)}
         @keyframes charBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
         .char-shadow{width:36px;height:8px;background:rgba(0,0,0,.3);border-radius:50%;margin:3px auto 0;animation:shadowPulse 1.5s ease-in-out infinite}
         @keyframes shadowPulse{0%,100%{transform:scaleX(1);opacity:.3}50%{transform:scaleX(.7);opacity:.5}}
-        .char-label{text-align:center;font-family:'Press Start 2P',cursive;font-size:6px;color:#FFC800;margin-top:3px}
+        .dice-label{text-align:center;font-family:'Inter',sans-serif;font-size:9px;font-weight:600;color:#FFC800;margin-top:4px;text-shadow:0 0 8px rgba(255,200,0,.3);letter-spacing:.5px;width:max-content;white-space:nowrap}
         .roadmap-container{position:relative;z-index:1}
         .path-line{position:absolute;left:50%;top:0;bottom:0;width:4px;background:linear-gradient(180deg,rgba(88,204,2,.1) 0%,rgba(88,204,2,.6) 10%,rgba(88,204,2,.6) 90%,rgba(88,204,2,.1) 100%);transform:translateX(-50%)}
         .path-line::before{content:'';position:absolute;top:0;left:-4px;width:12px;height:100%;background:linear-gradient(180deg,transparent,rgba(88,204,2,.1) 10%,rgba(88,204,2,.1) 90%,transparent);filter:blur(6px)}
@@ -177,7 +182,18 @@
 </div>
 
 <!-- CHARACTER -->
-<div id="character"><div class="char-body">🧙‍♂️</div><div class="char-shadow"></div><div class="char-label">LVL <span id="char-level">1</span></div></div>
+<div id="character">
+    <div class="dice" id="dice">
+        <div class="dice-face front" style="background:#DEA584;color:#1a1a1a"><span>🦀</span>Lang</div>
+        <div class="dice-face back" style="background:#336791;color:#fff"><span>🗄️</span>Data</div>
+        <div class="dice-face right" style="background:#1CB0F6;color:#fff"><span>🔗</span>API</div>
+        <div class="dice-face left" style="background:#326CE5;color:#fff"><span>☸️</span>Infra</div>
+        <div class="dice-face top" style="background:#E1270E;color:#fff"><span>🏭</span>Domain</div>
+        <div class="dice-face bottom" style="background:#CE82FF;color:#fff"><span>🏗️</span>Arch</div>
+    </div>
+    <div class="char-shadow"></div>
+    <div class="dice-label" id="dice-label">🎲 Roll!</div>
+</div>
 
 <!-- MAIN -->
 <main id="main-content" style="display:none">
@@ -326,61 +342,91 @@ function startGame(){gameStarted=true;document.getElementById('start-screen').cl
 function setXP(xp){const pct=Math.min(xp/MAX_XP*100,100);document.getElementById('hud-xp-bar').style.width=pct+'%';document.getElementById('hud-xp').textContent=xp+' XP';document.getElementById('footer-xp').textContent=xp}
 
 const character=document.getElementById('character');
+const dice=document.getElementById('dice');
+let rollAngleX=0,rollAngleY=0,rollRAF=null,isRolling=false,stopTimer=null;
+const faceOffsets=[[0,0],[0,180],[0,-90],[0,90],[-90,0],[90,0]];
+const faceData=[
+    {emoji:'🦀',label:'Lang',skills:'Rust · Go · Python'},
+    {emoji:'🗄️',label:'Data',skills:'PostgreSQL · TiDB · MongoDB'},
+    {emoji:'🔗',label:'API',skills:'REST · GraphQL · gRPC · NATS'},
+    {emoji:'☸️',label:'Infra',skills:'Docker · K8s · Helm · AWS'},
+    {emoji:'🏭',label:'Domain',skills:'IoT · ERP · Banking'},
+    {emoji:'🏗️',label:'Arch',skills:'Monolith · Event-Driven · Multi-Tenant · MicroSvcs'},
+];
+
+function startDiceRoll() {
+    if(!gameStarted||isRolling)return;
+    isRolling=true;
+    const step=()=>{
+        if(!isRolling)return;
+        rollAngleX+=15;rollAngleY+=22;
+        dice.style.transition='none';
+        dice.style.transform=`rotateX(${rollAngleX}deg) rotateY(${rollAngleY}deg)`;
+        rollRAF=requestAnimationFrame(step)
+    };
+    step()
+}
+
+function stopDiceRoll() {
+    isRolling=false;
+    if(rollRAF){cancelAnimationFrame(rollRAF);rollRAF=null}
+    const faceIdx=Math.floor(Math.random()*6);
+    const tx=(Math.floor(rollAngleX/360)+2)*360;
+    const ty=(Math.floor(rollAngleY/360)+2)*360;
+    const[ox,oy]=faceOffsets[faceIdx];
+    dice.style.transition='transform 0.8s cubic-bezier(0.34,1.56,0.64,1)';
+    dice.style.transform=`rotateX(${tx+ox}deg) rotateY(${ty+oy}deg)`;
+    const f=faceData[faceIdx];
+    document.getElementById('dice-label').innerHTML=`${f.emoji} ${f.label} · ${f.skills}`
+}
+
 function updateCharacter() {
-    if (!gameStarted || innerWidth < 768) return;
-    
-    const sections = document.querySelectorAll('.milestone-section');
-    const lastSection = sections[sections.length - 1];
-    const lastBottom = lastSection.getBoundingClientRect().bottom;
-    
-    // Fade out character when scrolled past the timeline
-    if (milestonesReached.has(3) && lastBottom < 100) {
-        character.style.opacity = '0';
-        document.querySelectorAll('.sq-dot.highlighted').forEach(d => d.classList.remove('highlighted'));
-        return;
+    if(!gameStarted||innerWidth<768)return;
+    const sections=document.querySelectorAll('.milestone-section');
+    const lastSection=sections[sections.length-1];
+    const lastBottom=lastSection.getBoundingClientRect().bottom;
+    if(milestonesReached.has(3)&&lastBottom<100){
+        character.style.opacity='0';
+        document.querySelectorAll('.sq-dot.highlighted').forEach(d=>d.classList.remove('highlighted'));
+        return
     }
-    
-    character.style.opacity = '1';
-    character.style.top = '90px';
-    
-    // Find closest milestone node
-    let closestI = 0, closestD = Infinity;
-    sections.forEach((s, i) => {
-        const n = s.querySelector('.milestone-node');
-        if (!n) return;
-        const r = n.getBoundingClientRect();
-        const d = Math.abs(r.top - 90);
-        if (d < closestD) { closestD = d; closestI = i; }
+    character.style.opacity='1';
+    character.style.top='90px';
+    let closestI=0,closestD=Infinity;
+    sections.forEach((s,i)=>{
+        const n=s.querySelector('.milestone-node');
+        if(!n)return;
+        const r=n.getBoundingClientRect();
+        const d=Math.abs(r.top-90);
+        if(d<closestD){closestD=d;closestI=i}
     });
-    
-    const centerX = innerWidth / 2;
-    const offset = closestI % 2 === 0 ? -70 : 70;
-    character.style.left = (centerX + offset - 26) + 'px';
-    
-    // Wave highlight: light dots individually as character passes them
-    const charCenter = 116; // 90px top + half of 52px char height
-    sections.forEach((section, i) => {
-        const branch = section.querySelector('.sq-branch');
-        if (!branch) return;
-        const dots = branch.querySelectorAll('.sq-dot.revealed');
-        dots.forEach(dot => {
-            if (i === closestI && closestD < 250) {
-                const dotRect = dot.getBoundingClientRect();
-                const dotCenter = dotRect.top + dotRect.height / 2;
-                const dist = Math.abs(dotCenter - charCenter);
-                dot.classList.toggle('highlighted', dist < 40);
-            } else {
-                dot.classList.remove('highlighted');
-            }
-        });
-    });
+    const centerX=innerWidth/2;
+    const offset=closestI%2===0?110:-110;
+    character.style.left=(centerX+offset-26)+'px';
+    const lbl=document.getElementById('dice-label');
+    lbl.style.textAlign=closestI%2===0?'left':'right';
+    lbl.style.paddingLeft=closestI%2===0?'12px':'0';
+    lbl.style.paddingRight=closestI%2===0?'0':'12px';
+    const charCenter=116;
+    sections.forEach((section,i)=>{
+        const branch=section.querySelector('.sq-branch');
+        if(!branch)return;
+        const dots=branch.querySelectorAll('.sq-dot.revealed');
+        dots.forEach(dot=>{
+            if(i===closestI&&closestD<250){
+                const dr=dot.getBoundingClientRect();
+                const dc=dr.top+dr.height/2;
+                dot.classList.toggle('highlighted',Math.abs(dc-charCenter)<40)
+            }else dot.classList.remove('highlighted')
+        })
+    })
 }
 
 function checkMilestones(){if(!gameStarted||isAutoScrolling)return;const sections=document.querySelectorAll('.milestone-section');const charY=90;
 sections.forEach((section,index)=>{if(milestonesReached.has(index))return;const node=section.querySelector('.milestone-node');if(!node)return;const nodeRect=node.getBoundingClientRect();
 const sRect=section.getBoundingClientRect();const vis=sRect.top<innerHeight&&sRect.bottom>0;if(vis){const card=section.querySelector('.milestone-card');if(card&&!card.classList.contains('visible'))card.classList.add('visible');section.querySelectorAll('.sq-dot:not(.revealed)').forEach((d,i)=>setTimeout(()=>d.classList.add('revealed'),i*80))}
 if(nodeRect.top<=charY+5){milestonesReached.add(index);let delay=0;if(nodeRect.top<40){isAutoScrolling=true;scrollBy({top:Math.min(40-nodeRect.top+30,80),behavior:'smooth'});delay=350;setTimeout(()=>{isAutoScrolling=false},500)}
-setTimeout(()=>{const xp=milestoneXP[index];const cumXP=[...milestonesReached].sort((a,b)=>a-b).reduce((s,i)=>s+milestoneXP[i],0);currentLevel=[1,2,3,5][index];setXP(cumXP);document.getElementById('hud-level').textContent='LVL '+currentLevel;document.getElementById('char-level').textContent=currentLevel;document.getElementById('footer-lvl').textContent=currentLevel;triggerLevelUp();showToast(`${milestoneNames[index]} Complete! +${xp} XP`);const r=node.getBoundingClientRect();spawnConfetti(r.left+r.width/2,Math.max(r.top,60));document.querySelectorAll('#hud-dots .progress-dot')[index]?.classList.add('active');playSound(index===3?'levelup':'ding')},delay)}})}
+setTimeout(()=>{const xp=milestoneXP[index];const cumXP=[...milestonesReached].sort((a,b)=>a-b).reduce((s,i)=>s+milestoneXP[i],0);currentLevel=[1,2,3,5][index];setXP(cumXP);document.getElementById('hud-level').textContent='LVL '+currentLevel;document.getElementById('footer-lvl').textContent=currentLevel;triggerLevelUp();showToast(`${milestoneNames[index]} Complete! +${xp} XP`);const r=node.getBoundingClientRect();spawnConfetti(r.left+r.width/2,Math.max(r.top,60));document.querySelectorAll('#hud-dots .progress-dot')[index]?.classList.add('active');playSound(index===3?'levelup':'ding')},delay)}})}
 
 function triggerLevelUp(){const f=document.getElementById('level-up-flash');f.classList.add('active');setTimeout(()=>f.classList.remove('active'),300)}
 let toastTimeout;function showToast(t){const e=document.getElementById('toast');document.getElementById('toast-text').textContent=t;e.classList.add('visible');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>e.classList.remove('visible'),3000)}
@@ -389,7 +435,7 @@ function spawnConfetti(x,y){const cols=['#58CC02','#1CB0F6','#FFC800','#CE82FF',
 
 const pc=['#58CC02','#1CB0F6','#FFC800','#CE82FF'];for(let i=0;i<12;i++){setTimeout(()=>{const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'vw';p.style.background=pc[Math.floor(Math.random()*pc.length)];p.style.animationDuration=(Math.random()*10+10)+'s';p.style.animationDelay=(Math.random()*5)+'s';const sz=(Math.random()*3+1)+'px';p.style.width=sz;p.style.height=sz;document.body.appendChild(p);p.addEventListener('animationend',()=>{p.style.left=Math.random()*100+'vw';p.style.animationDuration=(Math.random()*10+10)+'s';p.style.animationDelay='0s';document.body.appendChild(p)})},i*500)}
 
-addEventListener('scroll',()=>{if(!isAutoScrolling){updateCharacter();checkMilestones()}const prog=Math.min(scrollY/(document.documentElement.scrollHeight-innerHeight),1);document.getElementById('scroll-progress').style.width=prog*100+'%'},{passive:true});
+addEventListener('scroll',()=>{if(!isAutoScrolling){updateCharacter();checkMilestones()}const prog=Math.min(scrollY/(document.documentElement.scrollHeight-innerHeight),1);document.getElementById('scroll-progress').style.width=prog*100+'%';startDiceRoll();clearTimeout(stopTimer);stopTimer=setTimeout(stopDiceRoll,300)},{passive:true});
 addEventListener('keydown',e=>{if(e.key==='Enter'&&!gameStarted)startGame()});
 </script>
 </body>
