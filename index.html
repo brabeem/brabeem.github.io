@@ -122,7 +122,6 @@
         .toast.visible{transform:translateX(0)}
         #rotate-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:radial-gradient(ellipse at 50% 30%,#1a1a3e 0%,#0a0a1a 70%);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s}
         #rotate-overlay.visible{opacity:1;pointer-events:auto}
-        #rotate-overlay.dismissed{opacity:0;pointer-events:none!important}
         .section-header{text-align:center;padding:60px 20px 40px}
         .section-header h2{font-family:'Press Start 2P',cursive;font-size:18px;color:#FFC800;text-shadow:0 0 20px rgba(255,200,0,.3)}
         .progress-dot{width:8px;height:8px;border-radius:50%;background:#2a2a4e;transition:all .3s}
@@ -177,8 +176,7 @@
     <div style="text-align:center;padding:20px">
         <div style="font-size:64px;margin-bottom:24px;animation:charBounce 1.5s ease-in-out infinite">📱↻</div>
         <h2 class="pixel-font" style="font-size:14px;color:#58CC02;margin-bottom:12px">ROTATE YOUR DEVICE</h2>
-        <p style="font-size:13px;color:#6b7280;line-height:1.8;margin-bottom:20px">Landscape mode works best for this portfolio.<br>Please rotate your device horizontally.</p>
-        <button onclick="dismissRotate()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 24px;color:#9b9bba;font-size:12px;cursor:pointer">Continue in portrait</button>
+        <p style="font-size:13px;color:#6b7280;line-height:1.8">Landscape mode works best for this portfolio.<br>Please rotate your device horizontally.</p>
     </div>
 </div>
 
@@ -474,9 +472,7 @@ const pc=['#58CC02','#1CB0F6','#FFC800','#CE82FF'];for(let i=0;i<12;i++){setTime
 addEventListener('scroll',()=>{if(!isAutoScrolling){updateCharacter();checkMilestones()}const prog=Math.min(scrollY/(document.documentElement.scrollHeight-innerHeight),1);document.getElementById('scroll-progress').style.width=prog*100+'%';startDiceRoll();clearTimeout(stopTimer);stopTimer=setTimeout(stopDiceRoll,300)},{passive:true});
 addEventListener('keydown',e=>{if(e.key==='Enter'&&!gameStarted)startGame()});
 const ro=document.getElementById('rotate-overlay');
-let rotateDismissed=false;
-function dismissRotate(){rotateDismissed=true;ro.classList.remove('visible');ro.classList.add('dismissed')}
-function checkOrientation(){if(!rotateDismissed)ro.classList.toggle('visible',innerWidth<768&&innerHeight>innerWidth)}
+function checkOrientation(){ro.classList.toggle('visible',innerWidth<768&&innerHeight>innerWidth)}
 checkOrientation();
 addEventListener('resize',checkOrientation);
 addEventListener('orientationchange',()=>setTimeout(checkOrientation,300));
