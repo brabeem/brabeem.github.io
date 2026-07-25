@@ -120,6 +120,8 @@
         .inv-slot:hover{border-color:rgba(28,176,246,.5);background:rgba(28,176,246,.05);transform:translateY(-2px)}
         .toast{position:fixed;top:80px;right:20px;z-index:200;padding:16px 24px;border-radius:12px;background:rgba(26,26,46,.95);backdrop-filter:blur(12px);border:1px solid rgba(88,204,2,.3);transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:12px}
         .toast.visible{transform:translateX(0)}
+        #rotate-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:radial-gradient(ellipse at 50% 30%,#1a1a3e 0%,#0a0a1a 70%);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s}
+        #rotate-overlay.visible{opacity:1;pointer-events:auto}
         .section-header{text-align:center;padding:60px 20px 40px}
         .section-header h2{font-family:'Press Start 2P',cursive;font-size:18px;color:#FFC800;text-shadow:0 0 20px rgba(255,200,0,.3)}
         .progress-dot{width:8px;height:8px;border-radius:50%;background:#2a2a4e;transition:all .3s}
@@ -131,12 +133,27 @@
         @media(max-width:768px){
             .path-line,.path-dots{left:24px}.milestone-node{left:24px!important}
             .milestone-card{max-width:100%!important;margin-left:56px!important;margin-right:12px!important}
-            #character{display:none}.xp-bar-outer{width:120px}.start-btn{font-size:11px;padding:14px 32px}
+            #character{transform:translateX(-18px)!important}.character .dice{width:40px;height:40px}.dice-face{width:40px;height:40px;font-size:7px}.dice-face span{font-size:15px}.front{transform:translateZ(20px)}.back{transform:rotateY(180deg) translateZ(20px)}.right{transform:rotateY(90deg) translateZ(20px)}.left{transform:rotateY(-90deg) translateZ(20px)}.top{transform:rotateX(90deg) translateZ(20px)}.bottom{transform:rotateX(-90deg) translateZ(20px)}.dice-label{font-size:7px}
+            .xp-bar-outer{width:120px}.start-btn{font-size:11px;padding:14px 32px}
             .sq-branch{position:relative!important;left:56px!important;width:calc(100% - 68px)!important;top:auto!important}
             .sq-branch-line{display:none}
             .sq-tooltip{width:220px!important}
             .sq-branch-left .sq-tooltip,.sq-branch-right .sq-tooltip{left:0!important;right:auto!important;top:calc(100% + 6px)!important;transform:none!important}
             .sq-tooltip::after{display:none}
+            .section-header{padding:40px 16px 24px}.section-header h2{font-size:14px}
+            .milestone-card{padding:20px}.milestone-card h3{font-size:17px!important}
+            #game-hud{gap:8px;padding:8px 12px;flex-wrap:wrap}
+            #hud-dots{display:none}.toast{top:70px;right:10px;padding:12px 16px}
+            .title-glow{font-size:20px!important}.start-btn{font-size:10px;padding:12px 24px}
+            #stars-canvas{display:none}
+        }
+        @media(max-width:480px){
+            .milestone-card{margin-left:12px!important;margin-right:8px!important;padding:14px!important;border-radius:14px!important}
+            .milestone-node{width:36px!important;height:36px!important;font-size:16px!important;left:12px!important}
+            .sq-tooltip{width:180px!important;font-size:11px!important}
+            #character{display:none}
+            #game-hud .pixel-font{font-size:6px!important}
+            .xp-bar-outer{width:80px}
         }
         ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#0a0a1a}::-webkit-scrollbar-thumb{background:#2a2a4e;border-radius:3px}
     </style>
@@ -146,6 +163,14 @@
 <div id="level-up-flash" class="level-up-flash"></div>
 <div id="scroll-progress"></div>
 <div id="toast" class="toast"><span style="font-size:24px">🏆</span><div><div class="pixel-font" style="font-size:8px;color:#58CC02">MILESTONE REACHED</div><div id="toast-text" style="font-size:13px;color:#fff;margin-top:4px"></div></div></div>
+
+<div id="rotate-overlay">
+    <div style="text-align:center;padding:20px">
+        <div style="font-size:64px;margin-bottom:24px;animation:charBounce 1.5s ease-in-out infinite">📱↻</div>
+        <h2 class="pixel-font" style="font-size:14px;color:#58CC02;margin-bottom:12px">ROTATE YOUR DEVICE</h2>
+        <p style="font-size:13px;color:#6b7280;line-height:1.8">Landscape mode works best for this portfolio.<br>Please rotate your device horizontally.</p>
+    </div>
+</div>
 
 <div id="sq-modal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
     <div class="modal-content">
@@ -381,7 +406,7 @@ function stopDiceRoll() {
 }
 
 function updateCharacter() {
-    if(!gameStarted||innerWidth<768)return;
+    if(!gameStarted||innerWidth<480)return;
     const sections=document.querySelectorAll('.milestone-section');
     const lastSection=sections[sections.length-1];
     const lastBottom=lastSection.getBoundingClientRect().bottom;
@@ -401,7 +426,8 @@ function updateCharacter() {
         if(d<closestD){closestD=d;closestI=i}
     });
     const centerX=innerWidth/2;
-    const offset=closestI%2===0?110:-110;
+    const isMobile=innerWidth<768;
+    const offset=closestI%2===0?(isMobile?60:110):(isMobile?-60:-110);
     character.style.left=(centerX+offset-26)+'px';
     const lbl=document.getElementById('dice-label');
     lbl.style.textAlign=closestI%2===0?'left':'right';
@@ -437,6 +463,11 @@ const pc=['#58CC02','#1CB0F6','#FFC800','#CE82FF'];for(let i=0;i<12;i++){setTime
 
 addEventListener('scroll',()=>{if(!isAutoScrolling){updateCharacter();checkMilestones()}const prog=Math.min(scrollY/(document.documentElement.scrollHeight-innerHeight),1);document.getElementById('scroll-progress').style.width=prog*100+'%';startDiceRoll();clearTimeout(stopTimer);stopTimer=setTimeout(stopDiceRoll,300)},{passive:true});
 addEventListener('keydown',e=>{if(e.key==='Enter'&&!gameStarted)startGame()});
+const ro=document.getElementById('rotate-overlay');
+function checkOrientation(){ro.classList.toggle('visible',innerWidth<768&&innerHeight>innerWidth)}
+checkOrientation();
+addEventListener('resize',checkOrientation);
+addEventListener('orientationchange',()=>setTimeout(checkOrientation,300));
 </script>
 </body>
 </html>
