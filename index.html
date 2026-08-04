@@ -27,7 +27,7 @@
         .xp-bar-inner{height:100%;background:linear-gradient(90deg,#58CC02,#7FEF3A);border-radius:7px;width:0%;position:relative;transition:width .8s cubic-bezier(.4,0,.2,1)}
         .xp-bar-inner::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:40%;background:rgba(255,255,255,.25);border-radius:4px}
         #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#58CC02,#1CB0F6,#CE82FF,#FFC800);z-index:101;width:0%;transition:width .05s linear}
-        #character{position:fixed;z-index:50;pointer-events:none;display:none;top:90px;left:50%;transform:translateX(-26px);transition:left .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease;perspective:200px}
+        #character{position:fixed;z-index:50;pointer-events:none;display:none;top:90px;left:50%;transform:translate(-26px,-26px);transition:opacity .4s ease;perspective:200px}
         .dice{width:52px;height:52px;transform-style:preserve-3d;position:relative}
         .dice-face{position:absolute;width:52px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-weight:700;backface-visibility:hidden;border-radius:8px;border:2px solid rgba(255,255,255,.15);text-align:center;line-height:1.2}
         .dice-face span{font-size:20px;margin-bottom:1px}
@@ -63,6 +63,14 @@
         .skill-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:rgba(28,176,246,.1);border:1px solid rgba(28,176,246,.2);font-size:11px;color:#1CB0F6}
         .xp-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:rgba(88,204,2,.1);border:1px solid rgba(88,204,2,.3);font-size:11px;color:#58CC02;font-family:'Press Start 2P',cursive}
         .loot-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:rgba(206,130,255,.1);border:1px solid rgba(206,130,255,.2);font-size:11px;color:#CE82FF}
+        .rara-card{display:flex;flex-direction:column;gap:8px;cursor:pointer;padding:14px;border-radius:12px;border:1.5px solid;background:rgba(255,255,255,.03);transition:transform .2s,box-shadow .2s,background .2s,filter .2s;user-select:none}
+        .rara-card:hover{transform:translateY(-2px);background:rgba(255,255,255,.07);filter:brightness(1.12)}
+        .rara-card:active{transform:translateY(0) scale(.99)}
+        .rara-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .rara-badge{font-family:'Press Start 2P',cursive;font-size:7px;padding:5px 10px;border-radius:8px;line-height:1.6}
+        .rara-view{font-size:11px;font-weight:700;padding:6px 14px;border-radius:8px;border:1.5px solid;white-space:nowrap;letter-spacing:.5px}
+        .rara-name{font-size:14px;font-weight:700;color:#fff;line-height:1.3}
+        .rara-summary{font-size:11px;line-height:1.6;color:#9b9bba}
 
         /* ── Side Quest Branch ── */
         .sq-branch{position:absolute;z-index:8}
@@ -116,7 +124,8 @@
         .modal-overlay.active{opacity:1;pointer-events:auto}
         .modal-content{background:rgba(14,14,30,.98);backdrop-filter:blur(20px);border:1px solid rgba(206,130,255,.4);border-radius:20px;padding:32px;max-width:520px;width:100%;transform:scale(.9) translateY(20px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-height:80vh;overflow-y:auto}
         .modal-overlay.active .modal-content{transform:scale(1) translateY(0)}
-        .inv-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;background:rgba(26,26,46,.6);border:1px solid rgba(28,176,246,.15);border-radius:12px;transition:all .3s;cursor:default}
+        .inv-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;min-height:104px;background:rgba(26,26,46,.6);border:1px solid rgba(28,176,246,.15);border-radius:12px;transition:all .3s;cursor:default}
+        .inv-slot svg{font-size:36px;height:auto;width:auto;max-height:38px;max-width:88%}
         .inv-slot:hover{border-color:rgba(28,176,246,.5);background:rgba(28,176,246,.05);transform:translateY(-2px)}
         .toast{position:fixed;top:80px;right:20px;z-index:200;padding:16px 24px;border-radius:12px;background:rgba(26,26,46,.95);backdrop-filter:blur(12px);border:1px solid rgba(88,204,2,.3);transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:12px}
         .toast.visible{transform:translateX(0)}
@@ -133,7 +142,7 @@
         @media(max-width:768px){
             .path-line,.path-dots{left:24px}.milestone-node{left:24px!important}
             .milestone-card{max-width:100%!important;margin-left:56px!important;margin-right:12px!important}
-            #character{transform:translateX(-18px)!important}.character .dice{width:40px;height:40px}.dice-face{width:40px;height:40px;font-size:7px}.dice-face span{font-size:15px}.front{transform:translateZ(20px)}.back{transform:rotateY(180deg) translateZ(20px)}.right{transform:rotateY(90deg) translateZ(20px)}.left{transform:rotateY(-90deg) translateZ(20px)}.top{transform:rotateX(90deg) translateZ(20px)}.bottom{transform:rotateX(-90deg) translateZ(20px)}.dice-label{font-size:7px}
+            #character{transform:translate(-18px,-18px)!important}.character .dice{width:40px;height:40px}.dice-face{width:40px;height:40px;font-size:7px}.dice-face span{font-size:15px}.front{transform:translateZ(20px)}.back{transform:rotateY(180deg) translateZ(20px)}.right{transform:rotateY(90deg) translateZ(20px)}.left{transform:rotateY(-90deg) translateZ(20px)}.top{transform:rotateX(90deg) translateZ(20px)}.bottom{transform:rotateX(-90deg) translateZ(20px)}.dice-label{font-size:7px}
             .xp-bar-outer{width:120px}.start-btn{font-size:11px;padding:14px 32px}
             .sq-branch{position:relative!important;left:56px!important;width:calc(100% - 68px)!important;top:auto!important}
             .sq-branch-line{display:none}
@@ -187,7 +196,7 @@
             <button onclick="closeModal()" style="background:none;border:none;color:#6b7280;font-size:24px;cursor:pointer" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='#6b7280'">×</button>
         </div>
         <div id="modal-year" style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2"></div>
-        <div id="modal-desc" style="font-size:14px;color:#c0c0c0;line-height:1.8;margin-bottom:16px"></div>
+        <div id="modal-desc" style="font-size:14px;color:#c0c0c0;line-height:1.9;margin-bottom:16px;white-space:pre-line"></div>
         <div id="modal-skills" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
             <span id="modal-xp" class="xp-badge"></span>
@@ -217,12 +226,12 @@
 <!-- CHARACTER -->
 <div id="character">
     <div class="dice" id="dice">
-        <div class="dice-face front" style="background:#DEA584;color:#1a1a1a"><span>🦀</span>Lang</div>
-        <div class="dice-face back" style="background:#336791;color:#fff"><span>🗄️</span>Data</div>
-        <div class="dice-face right" style="background:#1CB0F6;color:#fff"><span>🔗</span>API</div>
-        <div class="dice-face left" style="background:#326CE5;color:#fff"><span>☸️</span>Infra</div>
-        <div class="dice-face top" style="background:#E1270E;color:#fff"><span>🏭</span>Domain</div>
-        <div class="dice-face bottom" style="background:#CE82FF;color:#fff"><span>🏗️</span>Arch</div>
+        <div class="dice-face front" style="background:#DEA584;color:#1a1a1a"><span class="iconify" data-icon="simple-icons:rust"></span>Lang</div>
+        <div class="dice-face back" style="background:#336791;color:#fff"><span class="iconify" data-icon="lucide:database"></span>Data</div>
+        <div class="dice-face right" style="background:#1CB0F6;color:#fff"><span class="iconify" data-icon="lucide:link-2"></span>API</div>
+        <div class="dice-face left" style="background:#326CE5;color:#fff"><span class="iconify" data-icon="simple-icons:kubernetes"></span>Infra</div>
+        <div class="dice-face top" style="background:#E1270E;color:#fff"><span class="iconify" data-icon="lucide:factory"></span>Domain</div>
+        <div class="dice-face bottom" style="background:#CE82FF;color:#fff"><span class="iconify" data-icon="lucide:layers"></span>Arch</div>
     </div>
     <div class="char-shadow"></div>
     <div class="dice-label" id="dice-label">🎲 Roll!</div>
@@ -269,21 +278,23 @@
     </div>
 </div>
 
-<!-- LVL 3 + BRODA -->
-<div class="milestone-section" style="position:relative;padding:60px 0 20px;min-height:400px" data-xp="8000" data-level="3">
+<!-- LVL 3 + RARA -->
+<div class="milestone-section" style="position:relative;padding:60px 0 20px;min-height:640px" data-xp="8000" data-level="3">
     <div class="milestone-node current" style="top:80px">🏦</div>
     <div class="milestone-card left gold" style="margin-top:40px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div><span class="pixel-font" style="font-size:8px;color:#FFC800">LVL 3</span><h3 style="font-size:20px;font-weight:800;color:#fff;margin-top:4px">First Quest</h3><p style="font-size:11px;color:#6b7280;margin-top:2px">Backend Engineer • Rara Labs</p></div><span class="xp-badge">+8000 XP</span></div>
         <p style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2">JAN 2023 – DEC 2024 • ON-SITE</p>
-        <div style="display:flex;flex-direction:column;gap:10px">
-            <div style="display:flex;align-items:start;gap:10px"><span style="color:#58CC02;font-size:12px">▸</span><div style="font-size:13px;color:#c0c0c0">Built <span style="color:#fff;font-weight:600">Central Banking System</span></div></div>
-            <div style="display:flex;align-items:start;gap:10px"><span style="color:#58CC02;font-size:12px">▸</span><div style="font-size:13px;color:#c0c0c0">Designed <span style="color:#fff;font-weight:600">Multi-tenant Architecture</span></div></div>
-            <div style="display:flex;align-items:start;gap:10px"><span style="color:#58CC02;font-size:12px">▸</span><div style="font-size:13px;color:#c0c0c0">Significantly <span style="color:#58CC02;font-weight:600">optimized performance</span></div></div>
+        <div style="font-size:13px;color:#c0c0c0;line-height:1.7;margin-bottom:14px">Built and later led engineering for a <span style="color:#fff;font-weight:600">monolithic, multi-tenant ERP</span> for cooperatives — shipping the <span style="color:#fff;font-weight:600">HR, payroll & taxation</span> suite and driving a company-wide <span style="color:#58CC02;font-weight:600">performance overhaul</span>.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"><span class="achievement-badge">⚡ Year-end 50min → 30s</span><span class="achievement-badge">⚡ Reports 10min → 20s</span><span class="achievement-badge">📊 ~200 reports</span><span class="achievement-badge">🔗 N+1 eliminated</span><span class="achievement-badge">👥 Led team after year one</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+            <div onclick="openModal('rara',0)" class="rara-card" style="border-color:rgba(255,200,0,.45);color:#FFC800"><div class="rara-top"><span class="rara-badge" style="background:rgba(255,200,0,.14);color:#FFC800">🧾 FEATURES</span><span class="rara-view" style="border-color:rgba(255,200,0,.45);color:#FFC800">View →</span></div><div class="rara-name">HR, Payroll & Tax Suite</div><div class="rara-summary">Hiring portal → interviews → offer letters → onboarding → salary, tax & deductions → documents → SMS</div></div>
+            <div onclick="openModal('rara',1)" class="rara-card" style="border-color:rgba(28,176,246,.45);color:#1CB0F6"><div class="rara-top"><span class="rara-badge" style="background:rgba(28,176,246,.14);color:#1CB0F6">⚡ OPTIMIZATION & REFACTORING</span><span class="rara-view" style="border-color:rgba(28,176,246,.45);color:#1CB0F6">View →</span></div><div class="rara-name">Performance Overhaul</div><div class="rara-summary">N+1 (DB & GraphQL) → batching + caching, query profiling, indexing & partitioning, PostgreSQL tuning, logging refactor</div></div>
+            <div onclick="openModal('rara',2)" class="rara-card" style="border-color:rgba(206,130,255,.45);color:#CE82FF"><div class="rara-top"><span class="rara-badge" style="background:rgba(206,130,255,.14);color:#CE82FF">👑 LEADERSHIP & DELIVERY</span><span class="rara-view" style="border-color:rgba(206,130,255,.45);color:#CE82FF">View →</span></div><div class="rara-name">Led Team & Delivery</div><div class="rara-summary">Led team after year one, end-to-end ownership, support coordination & hotfixes</div></div>
         </div>
-        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px"><span class="loot-tag">🐹 Go</span><span class="loot-tag">🐘 PostgreSQL</span><span class="loot-tag">🔗 REST</span><span class="loot-tag">📊 GraphQL</span><span class="loot-tag">🏦 ERP</span></div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px"><span class="loot-tag"><span class="iconify" data-icon="logos:go" style="font-size:14px"></span> Go</span><span class="loot-tag"><span class="iconify" data-icon="logos:postgresql" style="font-size:14px"></span> PostgreSQL</span><span class="loot-tag"><span class="iconify" data-icon="lucide:link-2" style="font-size:14px"></span> REST</span><span class="loot-tag"><span class="iconify" data-icon="logos:graphql" style="font-size:14px"></span> GraphQL</span><span class="loot-tag"><span class="iconify" data-icon="lucide:building-2" style="font-size:14px"></span> ERP</span></div>
     </div>
-    <div class="sq-branch sq-branch-right" style="top:160px">
-        <div class="sq-branch-line" style="top:0;height:50px"></div>
+    <div class="sq-branch sq-branch-right" style="top:280px">
+        <div class="sq-branch-line" style="top:0;bottom:0"></div>
         <div style="display:flex;flex-direction:column;gap:5px;padding:0 0 0 26px">
             <div class="sq-dot completed" onclick="openModal('firstquest',0)"><div class="sq-dot-node">🫂<div class="sq-tooltip"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:4px">SIDE PROJECT • 2023-24</div><div style="font-size:12px;color:#9b9bba;line-height:1.5">Social get-together — activities, nearby people</div><div style="margin-top:6px;font-size:9px;color:#58CC02">Click →</div></div></div><div class="sq-dot-label">Broda</div></div>
         </div>
@@ -296,15 +307,15 @@
     <div class="milestone-card right purple" style="margin-top:40px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div><span class="pixel-font" style="font-size:8px;color:#CE82FF">LVL 5 • BOSS FIGHT</span><h3 style="font-size:20px;font-weight:800;color:#fff;margin-top:4px">The Big Leagues</h3><p style="font-size:11px;color:#6b7280;margin-top:2px">Full Stack Developer • NubeIO</p></div><span class="xp-badge">+10000 XP</span></div>
         <p style="font-size:10px;color:#6b7280;margin-bottom:16px;font-family:'Press Start 2P',cursive;line-height:2">JAN 2025 – PRESENT • REMOTE</p>
-        <p style="font-size:12px;color:#CE82FF;margin-bottom:16px;font-style:italic">⚔️ Dev → Infra → Deploy → Scale → Monitor → Everything</p>
-        <div style="display:flex;flex-direction:column;gap:14px">
-            <div style="background:rgba(206,130,255,.05);border:1px solid rgba(206,130,255,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#CE82FF;margin-bottom:6px">PHASE 1: DATA</div><div style="font-size:12px;color:#c0c0c0">Optimized <span style="color:#fff;font-weight:600">IoT sensor data</span> — TimescaleDB</div></div>
-            <div style="background:rgba(28,176,246,.05);border:1px solid rgba(28,176,246,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#1CB0F6;margin-bottom:6px">PHASE 2: RE-ARCH</div><div style="font-size:12px;color:#c0c0c0">Re-architected <span style="color:#fff;font-weight:600">NATS leaf-node</span></div></div>
-            <div style="background:rgba(255,75,75,.05);border:1px solid rgba(255,75,75,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#FF4B4B;margin-bottom:6px">PHASE 3: BOSS</div><div style="font-size:12px;color:#c0c0c0">Debugged <span style="color:#fff;font-weight:600">RAFT consensus</span></div></div>
-            <div style="background:rgba(88,204,2,.05);border:1px solid rgba(88,204,2,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#58CC02;margin-bottom:6px">PHASE 4: INFRA</div><div style="font-size:12px;color:#c0c0c0">Deployed <span style="color:#fff;font-weight:600">EKS + Prometheus + Grafana</span></div></div>
-            <div style="background:rgba(255,200,0,.05);border:1px solid rgba(255,200,0,.15);border-radius:10px;padding:12px"><div class="pixel-font" style="font-size:7px;color:#FFC800;margin-bottom:6px">PHASE 5: SECURITY</div><div style="font-size:12px;color:#c0c0c0"><span style="color:#fff;font-weight:600">Vault PKI</span> + <span style="color:#fff;font-weight:600">Locust</span> load testing</div></div>
+        <p style="font-size:12px;color:#c0c0c0;line-height:1.7;margin-bottom:14px">Owned the full stack of an <span style="color:#fff;font-weight:600">IoT platform</span> ingesting <span style="color:#fff;font-weight:600">billions of sensor records</span> and controlling <span style="color:#fff;font-weight:600">~50K HVAC devices</span> — from the <span style="color:#fff;font-weight:600">TimescaleDB data layer</span> and device-control APIs to the <span style="color:#fff;font-weight:600">NATS message mesh</span>, Kubernetes on AWS, monitoring and security.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"><span class="achievement-badge">📊 Billions of IoT records</span><span class="achievement-badge">⚡ Yearly queries 15min → ~3s</span><span class="achievement-badge">📱 ~50K devices controlled</span><span class="achievement-badge">⚡ p99 30s → ~1s @ 3,000 qps</span><span class="achievement-badge">🧩 NATS leaf-node re-arch</span><span class="achievement-badge">🔐 Private CA (Vault PKI)</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+            <div onclick="openModal('nubeio',0)" class="rara-card" style="border-color:rgba(28,176,246,.45);color:#1CB0F6"><div class="rara-top"><span class="rara-badge" style="background:rgba(28,176,246,.14);color:#1CB0F6">📊 DATA LAYER</span><span class="rara-view" style="border-color:rgba(28,176,246,.45);color:#1CB0F6">View →</span></div><div class="rara-name">TimescaleDB at Billions of Rows</div><div class="rara-summary">Hypertables → indexes → continuous aggregates → compression → yearly queries 15min → ~3s</div></div>
+            <div onclick="openModal('nubeio',1)" class="rara-card" style="border-color:rgba(206,130,255,.45);color:#CE82FF"><div class="rara-top"><span class="rara-badge" style="background:rgba(206,130,255,.14);color:#CE82FF">🏗️ DEVICE PLATFORM</span><span class="rara-view" style="border-color:rgba(206,130,255,.45);color:#CE82FF">View →</span></div><div class="rara-name">Zone-Controller</div><div class="rara-summary">Mobile app controlling ~50K Fujitsu ACs — per-zone/room control, per-client APIs, NATS auth, deployed to EKS</div></div>
+            <div onclick="openModal('nubeio',2)" class="rara-card" style="border-color:rgba(88,204,2,.45);color:#58CC02"><div class="rara-top"><span class="rara-badge" style="background:rgba(88,204,2,.14);color:#58CC02">⚡ SCALE & STABILITY</span><span class="rara-view" style="border-color:rgba(88,204,2,.45);color:#58CC02">View →</span></div><div class="rara-name">Scale, Stability & Load</div><div class="rara-summary">NATS leaf-node re-arch + cluster stabilization, Redis thundering-herd cache, DB tuning p99 30s → 1s, Locust</div></div>
+            <div onclick="openModal('nubeio',3)" class="rara-card" style="border-color:rgba(255,75,75,.45);color:#FF4B4B"><div class="rara-top"><span class="rara-badge" style="background:rgba(255,75,75,.14);color:#FF4B4B">📈 MONITORING & SECURITY</span><span class="rara-view" style="border-color:rgba(255,75,75,.45);color:#FF4B4B">View →</span></div><div class="rara-name">Observability & Trust</div><div class="rara-summary">kube-prom-grafana, Prometheus + nats-exporter, Crunchy physical backups, Vault PKI private CA</div></div>
         </div>
-        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px"><span class="loot-tag">🐹 Go</span><span class="loot-tag">📊 TimescaleDB</span><span class="loot-tag">📡 NATS</span><span class="loot-tag">☸️ K8s</span><span class="loot-tag">☁️ AWS</span><span class="loot-tag">🔒 Vault</span><span class="loot-tag">📈 Prometheus</span></div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px"><span class="loot-tag"><span class="iconify" data-icon="logos:go" style="font-size:14px"></span> Go</span><span class="loot-tag"><span class="iconify" data-icon="simple-icons:timescale" style="font-size:14px"></span> TimescaleDB</span><span class="loot-tag"><span class="iconify" data-icon="logos:nats" style="font-size:14px"></span> NATS</span><span class="loot-tag"><span class="iconify" data-icon="logos:redis" style="font-size:14px"></span> Redis</span><span class="loot-tag"><span class="iconify" data-icon="logos:postgresql" style="font-size:14px"></span> PostgreSQL</span><span class="loot-tag"><span class="iconify" data-icon="logos:kubernetes" style="font-size:14px"></span> K8s</span><span class="loot-tag"><span class="iconify" data-icon="logos:aws" style="font-size:14px"></span> AWS</span><span class="loot-tag"><span class="iconify" data-icon="logos:prometheus" style="font-size:14px"></span> Prometheus</span><span class="loot-tag"><span class="iconify" data-icon="logos:grafana" style="font-size:14px"></span> Grafana</span><span class="loot-tag"><span class="iconify" data-icon="logos:vault" style="font-size:14px"></span> Vault</span></div>
     </div>
     <div class="sq-branch sq-branch-left" style="top:140px">
         <div class="sq-branch-line" style="top:0;bottom:0"></div>
@@ -322,23 +333,25 @@
 <!-- INVENTORY -->
 <section style="padding:40px 20px 80px;max-width:900px;margin:0 auto">
     <div class="section-header"><h2>INVENTORY</h2></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px">
-        <div class="inv-slot"><span style="font-size:24px">🐹</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">GoLang</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🐍</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Python</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🦀</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Rust</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🐘</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">PostgreSQL</span></div>
-        <div class="inv-slot"><span style="font-size:24px">⚡</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">TiDB</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🍃</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">MongoDB</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🔗</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">REST</span></div>
-        <div class="inv-slot"><span style="font-size:24px">📊</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">GraphQL</span></div>
-        <div class="inv-slot"><span style="font-size:24px">⚡</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">gRPC</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🐳</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Docker</span></div>
-        <div class="inv-slot"><span style="font-size:24px">☸️</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Kubernetes</span></div>
-        <div class="inv-slot"><span style="font-size:24px">⛵</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Helm</span></div>
-        <div class="inv-slot"><span style="font-size:24px">☁️</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">AWS</span></div>
-        <div class="inv-slot"><span style="font-size:24px">📡</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">NATS</span></div>
-        <div class="inv-slot"><span style="font-size:24px">📈</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Prometheus</span></div>
-        <div class="inv-slot"><span style="font-size:24px">🔧</span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Git</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px">
+        <div class="inv-slot"><span class="iconify" data-icon="logos:go" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">GoLang</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:python" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Python</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:rust" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Rust</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:postgresql" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">PostgreSQL</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="simple-icons:tidb" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">TiDB</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:mongodb" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">MongoDB</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="lucide:link-2" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">REST</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:graphql" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">GraphQL</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:grpc" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">gRPC</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:docker" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Docker</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:kubernetes" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Kubernetes</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:helm" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Helm</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:aws" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">AWS</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:nats" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">NATS</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:prometheus" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Prometheus</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:redis" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Redis</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:grafana" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Grafana</span></div>
+        <div class="inv-slot"><span class="iconify" data-icon="logos:git" style="font-size:36px"></span><span style="font-size:10px;color:#e0e0e0;margin-top:6px;font-weight:600">Git</span></div>
     </div>
 </section>
 
@@ -349,9 +362,9 @@
     <p style="font-size:14px;color:#6b7280;margin-bottom:32px;line-height:1.7">New quests, new challenges. Always building.</p>
     <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:32px">
         <a href="mailto:brabeem123@gmail.com" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(88,204,2,.1);border:1px solid rgba(88,204,2,.3);color:#58CC02;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:mail" style="font-size:16px"></span>Email</a>
-        <a href="https://github.com/brabeem" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(28,176,246,.1);border:1px solid rgba(28,176,246,.3);color:#1CB0F6;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:github" style="font-size:16px"></span>GitHub</a>
-        <a href="https://www.linkedin.com/in/brabeem-sapkota-12b843200/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(206,130,255,.1);border:1px solid rgba(206,130,255,.3);color:#CE82FF;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:linkedin" style="font-size:16px"></span>LinkedIn</a>
-        <a href="https://medium.com/@brabimsapkota" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.3);color:#FFC800;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="lucide:pen-line" style="font-size:16px"></span>Medium</a>
+        <a href="https://github.com/brabeem" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(28,176,246,.1);border:1px solid rgba(28,176,246,.3);color:#1CB0F6;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="simple-icons:github" style="font-size:16px"></span>GitHub</a>
+        <a href="https://www.linkedin.com/in/brabeem-sapkota-12b843200/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(206,130,255,.1);border:1px solid rgba(206,130,255,.3);color:#CE82FF;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="simple-icons:linkedin" style="font-size:16px"></span>LinkedIn</a>
+        <a href="https://medium.com/@brabimsapkota" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;background:rgba(255,200,0,.1);border:1px solid rgba(255,200,0,.3);color:#FFC800;text-decoration:none;font-size:13px;font-weight:600;transition:all .3s" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='translateY(0)'"><span class="iconify" data-icon="simple-icons:medium" style="font-size:16px"></span>Medium</a>
     </div>
     <div style="font-size:11px;color:#4b5563">📍 Kathmandu, Nepal • 📞 +977-9861584544</div>
     <div style="margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.05)"><div class="pixel-font" style="font-size:7px;color:#2a2a4e">TOTAL XP: <span id="footer-xp">0</span> • LVL <span id="footer-lvl">1</span></div></div>
@@ -359,7 +372,7 @@
 </main>
 
 <script>
-const SQ={academy:[{emoji:'🐦',title:'Bird Hunter',type:'SIDE QUEST',typeColor:'#CE82FF',year:'2ND SEMESTER • 2019',desc:'A bird killing game built while learning C++ during my second semester. Simple but effective for understanding programming fundamentals — loops, conditionals, functions, and basic game loops. The first real program that felt alive.',skills:['C++','Game Dev','Programming Fundamentals'],link:'https://github.com/brabeem/bird_hunter',xp:500},{emoji:'🐍',title:'Learned Python',type:'SELF-TAUGHT',typeColor:'#1CB0F6',year:'SELF-DIRECTED • 2019',desc:'Python wasn\'t part of the course — only C and C++ were taught. Taught myself Python from scratch, opening the door to everything that followed. The single most important self-investment.',skills:['Python','Self-Learning'],link:null,xp:300},{emoji:'📢',title:'AnnounceMe',type:'SIDE QUEST',typeColor:'#CE82FF',year:'DBMS PROJECT • 2020',desc:'First application using a database. Built a full announcement platform with: Auth (signup/login/logout), Groups (create/join/view/enter), Posts (announcements, newest first), Likes (toggle "checks" — green/red), Comments. Databases became real.',skills:['Database Design','Auth','CRUD','SQL','Web Dev'],link:'https://github.com/brabeem/announceMe',xp:800},{emoji:'📚',title:'ML, NLP, CV',type:'COURSEWORK',typeColor:'#1CB0F6',year:'UNIVERSITY • 2020-2021',desc:'Studied Machine Learning, NLP, and Computer Vision. Built the theoretical and practical foundation for everything that followed.',skills:['ML','NLP','CV','Feature Engineering'],link:null,xp:1000},{emoji:'🧠',title:'Deep Learning Specialization',type:'COURSE',typeColor:'#1CB0F6',year:'ANDREW NG • 2021',desc:'Completed the Deep Learning specialization. Object detection (YOLO), RNN for music generation, CNNs, optimization, batch normalization. Deep learning clicked — not just frameworks, but the math behind every layer.',skills:['Deep Learning','CNNs','RNNs','Object Detection','Music Generation','Optimization'],link:null,xp:1500},{emoji:'🎮',title:'RL Nanodegree',type:'NANODEGREE',typeColor:'#CE82FF',year:'UDACITY • 2021-2022',desc:'Completed the Udacity RL Nanodegree. Trained many game bots: DQN, policy gradients, actor-critic. This directly inspired the MADDPG capstone project.',skills:['RL','DQN','Policy Gradients','Actor-Critic','Unity ML-Agents'],link:'https://github.com/brabeem/deep-reinforcement-learning',xp:2000},{emoji:'🤖',title:'MADDPG Capture the Flag AI',type:'CAPSTONE',typeColor:'#FF4B4B',year:'CAPSTONE • 2022-2023',desc:'Developed AI agents for capture-the-flag/dodgeball in Unity ML-Agents using MADDPG with self-play and curriculum learning. Achieved emergent competitive/cooperative behaviors. Explored DQN, PPO, A3C, DDPG before selecting MADDPG. Led algorithm design and taught RL math to teammates.',skills:['MADDPG','Self-Play','Curriculum Learning','Multi-Agent RL','Unity ML-Agents'],link:null,xp:3000},{emoji:'⚡',title:'Transformer from Scratch',type:'SIDE QUEST',typeColor:'#CE82FF',year:'SELF-DIRECTED • 2022',desc:'Implemented the full "Attention Is All You Need" architecture from scratch in PyTorch — multi-head self-attention, positional encoding, encoder-decoder blocks, training loop. No shortcuts. You can\'t modify what you don\'t understand.',skills:['PyTorch','Self-Attention','Positional Encoding','Encoder-Decoder','Transformers'],link:null,xp:2000},{emoji:'📜',title:'Video Moment Retrieval',type:'LEGENDARY QUEST',typeColor:'#FFC800',year:'PUBLISHED • 2022-2023',desc:'Published work on cross-modal contrastive learning with asymmetric co-attention for temporal video grounding. Led mathematical formulation. Implemented transformer from scratch. Literature survey (MSAT, mPLUG, ALBEF, MoCo, 2D-TAN). SOTA on TACoS with 30% fewer parameters.',skills:['Contrastive Learning','Co-Attention','VTC Loss','Vision-Language','Transformers','Research'],link:null,xp:5000,isPublished:true}],firstquest:[{emoji:'🫂',title:'Broda',type:'SIDE QUEST',typeColor:'#CE82FF',year:'SIDE PROJECT • 2023-2024',desc:'A social get-together platform where activities can be created and people nearby can see and join them. A community app for connecting people through shared activities and events.',skills:['Social Platform','Activity Creation','Geolocation','Community','Web Dev'],link:'https://github.com/SetGet-Solutions/broda',xp:1000}],bigleagues:[{emoji:'☁️',title:'AWS / Kubernetes / Helm',type:'IN PROGRESS',typeColor:'#1CB0F6',year:'LEARNING • 2025',desc:'Learning AWS (EKS), Kubernetes orchestration, and Helm chart management. Hands-on deployment, cluster management, and service orchestration.',skills:['AWS EKS','Kubernetes','Helm','Cloud Infra'],link:null,xp:500},{emoji:'🦀',title:'Learning Rust',type:'CURRENTLY LEARNING',typeColor:'#FFC800',year:'IN PROGRESS • 2025',desc:'Exploring Rust for systems programming — memory safety, concurrency, and performance-critical applications.',skills:['Rust','Systems Programming','Memory Safety','Concurrency'],link:null,xp:300},{emoji:'📖',title:'DDIA & Microservices in Go',type:'STUDYING',typeColor:'#CE82FF',year:'READING • 2025',desc:'Reading "Designing Data-Intensive Applications" by Martin Kleppmann and "Microservices in Go" — deepening understanding of distributed systems and microservice patterns.',skills:['Distributed Systems','Data Architecture','Microservices','System Design'],link:null,xp:400},{emoji:'💻',title:'LeetCode',type:'TRAINING',typeColor:'#1CB0F6',year:'ONGOING • 2025',desc:'Sharpening algorithm and data structure skills through regular LeetCode practice.',skills:['Algorithms','Data Structures','Problem Solving'],link:null,xp:200},{emoji:'✍️',title:'Medium Articles',type:'CREATING',typeColor:'#1CB0F6',year:'ONGOING • 2025',desc:'Writing technical articles on Medium about backend development, distributed systems, Go programming, and AI. Sharing knowledge from real-world production experience.',skills:['Technical Writing','Knowledge Sharing','Backend','Distributed Systems','Go'],link:'https://medium.com/@brabimsapkota',xp:300}]};
+const SQ={academy:[{emoji:'🐦',title:'Bird Hunter',type:'SIDE QUEST',typeColor:'#CE82FF',year:'2ND SEMESTER • 2019',desc:'A bird killing game built while learning C++ during my second semester. Simple but effective for understanding programming fundamentals — loops, conditionals, functions, and basic game loops. The first real program that felt alive.',skills:['C++','Game Dev','Programming Fundamentals'],link:'https://github.com/brabeem/bird_hunter',xp:500},{emoji:'🐍',title:'Learned Python',type:'SELF-TAUGHT',typeColor:'#1CB0F6',year:'SELF-DIRECTED • 2019',desc:'Python wasn\'t part of the course — only C and C++ were taught. Taught myself Python from scratch, opening the door to everything that followed. The single most important self-investment.',skills:['Python','Self-Learning'],link:null,xp:300},{emoji:'📢',title:'AnnounceMe',type:'SIDE QUEST',typeColor:'#CE82FF',year:'DBMS PROJECT • 2020',desc:'First application using a database. Built a full announcement platform with: Auth (signup/login/logout), Groups (create/join/view/enter), Posts (announcements, newest first), Likes (toggle "checks" — green/red), Comments. Databases became real.',skills:['Database Design','Auth','CRUD','SQL','Web Dev'],link:'https://github.com/brabeem/announceMe',xp:800},{emoji:'📚',title:'ML, NLP, CV',type:'COURSEWORK',typeColor:'#1CB0F6',year:'UNIVERSITY • 2020-2021',desc:'Studied Machine Learning, NLP, and Computer Vision. Built the theoretical and practical foundation for everything that followed.',skills:['ML','NLP','CV','Feature Engineering'],link:null,xp:1000},{emoji:'🧠',title:'Deep Learning Specialization',type:'COURSE',typeColor:'#1CB0F6',year:'ANDREW NG • 2021',desc:'Completed the Deep Learning specialization. Object detection (YOLO), RNN for music generation, CNNs, optimization, batch normalization. Deep learning clicked — not just frameworks, but the math behind every layer.',skills:['Deep Learning','CNNs','RNNs','Object Detection','Music Generation','Optimization'],link:null,xp:1500},{emoji:'🎮',title:'RL Nanodegree',type:'NANODEGREE',typeColor:'#CE82FF',year:'UDACITY • 2021-2022',desc:'Completed the Udacity RL Nanodegree. Trained many game bots: DQN, policy gradients, actor-critic. This directly inspired the MADDPG capstone project.',skills:['RL','DQN','Policy Gradients','Actor-Critic','Unity ML-Agents'],link:'https://github.com/brabeem/deep-reinforcement-learning',xp:2000},{emoji:'🤖',title:'MADDPG Capture the Flag AI',type:'CAPSTONE',typeColor:'#FF4B4B',year:'CAPSTONE • 2022-2023',desc:'Developed AI agents for capture-the-flag/dodgeball in Unity ML-Agents using MADDPG with self-play and curriculum learning. Achieved emergent competitive/cooperative behaviors. Explored DQN, PPO, A3C, DDPG before selecting MADDPG. Led algorithm design.',skills:['MADDPG','Self-Play','Curriculum Learning','Multi-Agent RL','Unity ML-Agents'],link:'https://github.com/brabeem/DodgeBall_MA_RL',xp:3000},{emoji:'⚡',title:'Transformer from Scratch',type:'SIDE QUEST',typeColor:'#CE82FF',year:'SELF-DIRECTED • 2022',desc:'Implemented the full "Attention Is All You Need" architecture from scratch in PyTorch — multi-head self-attention, positional encoding, encoder-decoder blocks, training loop. No shortcuts. You can\'t modify what you don\'t understand.',skills:['PyTorch','Self-Attention','Positional Encoding','Encoder-Decoder','Transformers'],link:'https://github.com/brabeem/Transformer',xp:2000},{emoji:'📜',title:'Video Moment Retrieval',type:'LEGENDARY QUEST',typeColor:'#FFC800',year:'PUBLISHED • 2022-2023',desc:'Published work on cross-modal contrastive learning with asymmetric co-attention for temporal video grounding. Led mathematical formulation. Implemented transformer from scratch. Literature survey (MSAT, mPLUG, ALBEF, MoCo, 2D-TAN). SOTA on TACoS with 30% fewer parameters.',skills:['Contrastive Learning','Co-Attention','VTC Loss','Vision-Language','Transformers','Research'],link:'https://arxiv.org/abs/2312.07435',xp:5000,isPublished:true}],rara:[{emoji:'🧾',title:'Features — HR, Payroll & Tax Suite',type:'FEATURES',typeColor:'#FFC800',year:'FEATURE BUILD • 2023',desc:'Built the full HR, payroll & taxation product line on the ERP, plus platform features:\n• Hiring portal — candidates apply online\n• Application listing — recruiters review, filter and shortlist\n• Interview scheduling\n• Offer letters — dynamically templated and sent\n• Onboarding — one-click promotion to employee once the offer is accepted\n• Salary & taxation — salary preparation, tax computation, emailed receipts and payslips\n• Deduction components — CIT, SSF and other deductions per employee\n• Document Management — folders, file uploads, granular permissions on every file and folder\n• SMS messaging — NTC API, custom templates, per-cooperative configuration, background event messages (birthdays)',skills:['HR','Payroll','Taxation','Deductions','Document Management','SMS','Multi-Tenant ERP'],link:null,xp:2000},{emoji:'⚡',title:'Optimization & Refactoring',type:'OPTIMIZATION & REFACTORING',typeColor:'#1CB0F6',year:'PERFORMANCE • 2024',desc:'A company-wide performance overhaul that solved deep bottlenecks, plus a logging refactor:\n• N+1 database queries — thousands of lazy per-record calls were killing the slow operations. Solved with query batching and request-scoped caching: data is pulled once and reused for the whole request.\n• Deep N+1 chains in GraphQL — one query triggered thousands more. Solved with DataLoader batching.\n• Slow reporting queries — profiled every query, then added indexes and table partitions where they mattered.\n• Bloated queries — reshaped queries to fetch only the columns and rows actually needed.\n• Under-configured PostgreSQL — tuned shared_buffers, effective_cache_size, WAL memory, max_connections, idle connections and the application-side connection pool.\n• Results — ~200 reports (trial balance, day book, and more) dropped from ~10 minutes to ~20 seconds; fiscal year-end processing from ~50 minutes to ~30 seconds.\n• Logging & error handling — refactored so everything is traceable: log once at the handler layer, wrap every error from leaf to handler, return user errors to users and never leak internal errors, structured logs per layer.',skills:['Query Batching','Request Caching','DataLoader','Indexing','Partitioning','PostgreSQL Tuning','Logging'],link:null,xp:3000},{emoji:'👑',title:'Leadership & Delivery',type:'LEADERSHIP & DELIVERY',typeColor:'#CE82FF',year:'LEADERSHIP • 2024',desc:'Took the reins after a year and led delivery:\n• Led the engineering team\n• Owned the application end-to-end — features, fixes, architecture and releases\n• Coordinated constantly with the support team — reproduced issues and shipped hotfixes immediately\n• Kept engineering and support moving as one unit',skills:['Leadership','Team Lead','Support Coordination','Hotfixes','Release Management'],link:null,xp:1500}],firstquest:[{emoji:'🫂',title:'Broda',type:'SIDE QUEST',typeColor:'#CE82FF',year:'SIDE PROJECT • 2023-2024',desc:'A social get-together platform where activities can be created and people nearby can see and join them. A community app for connecting people through shared activities and events.',skills:['Social Platform','Activity Creation','Geolocation','Community','Web Dev'],link:'https://github.com/SetGet-Solutions/broda',xp:1000}],bigleagues:[{emoji:'☁️',title:'AWS / Kubernetes / Helm',type:'IN PROGRESS',typeColor:'#1CB0F6',year:'LEARNING • 2025',desc:'Learning AWS (EKS), Kubernetes orchestration, and Helm chart management. Hands-on deployment, cluster management, and service orchestration.',skills:['AWS EKS','Kubernetes','Helm','Cloud Infra'],link:null,xp:500},{emoji:'🦀',title:'Learning Rust',type:'CURRENTLY LEARNING',typeColor:'#FFC800',year:'IN PROGRESS • 2025',desc:'Exploring Rust for systems programming — memory safety, concurrency, and performance-critical applications.',skills:['Rust','Systems Programming','Memory Safety','Concurrency'],link:null,xp:300},{emoji:'📖',title:'DDIA & Microservices in Go',type:'STUDYING',typeColor:'#CE82FF',year:'READING • 2025',desc:'Reading "Designing Data-Intensive Applications" by Martin Kleppmann and "Microservices in Go" — deepening understanding of distributed systems and microservice patterns.',skills:['Distributed Systems','Data Architecture','Microservices','System Design'],link:null,xp:400},{emoji:'💻',title:'LeetCode',type:'TRAINING',typeColor:'#1CB0F6',year:'ONGOING • 2025',desc:'Sharpening algorithm and data structure skills through regular LeetCode practice.',skills:['Algorithms','Data Structures','Problem Solving'],link:null,xp:200},{emoji:'✍️',title:'Medium Articles',type:'CREATING',typeColor:'#1CB0F6',year:'ONGOING • 2025',desc:'Writing technical articles on Medium about backend development, distributed systems, Go programming, and AI. Sharing knowledge from real-world production experience.',skills:['Technical Writing','Knowledge Sharing','Backend','Distributed Systems','Go'],link:'https://medium.com/@brabimsapkota',xp:300}],nubeio:[{emoji:'📊',title:'TimescaleDB at Billions of Rows',type:'DATA LAYER',typeColor:'#1CB0F6',year:'PHASE 1 • DATA',desc:'Challenge: the platform\'s IoT sensor data grew into billions of rows, and time-range queries crawled.\n• Moved the sensor layer to TimescaleDB, using hypertables to split data automatically across time.\n• Added targeted indexes on the query hot paths (time + device + metric).\n• Built continuous aggregates to pre-roll data into hourly, daily, weekly, monthly and yearly buckets, so dashboards read precomputed values instead of scanning raw rows.\n• Enabled native compression on older chunks to shrink storage and speed up scans.\n• Result: yearly-range queries dropped from ~15 minutes to ~3 seconds.',skills:['TimescaleDB','Hypertables','Continuous Aggregates','Compression','SQL','PostgreSQL'],link:null,xp:2000},{emoji:'🏗️',title:'Zone-Controller',type:'DEVICE PLATFORM',typeColor:'#CE82FF',year:'PHASE 2 • PLATFORM',desc:'Challenge: build a platform to control commercial Fujitsu AC units at scale — roughly 50K devices spread across zones and rooms.\n• Started the codebase from scratch and shipped per-client APIs on top of a shared core.\n• Architecture: devices connect with credentials through a NATS message layer; a callout server authenticates connections, while the backend sits behind a wrapping layer exposing clean APIs.\n• Zones and rooms are individually addressable, so every space can be controlled and scheduled on its own.\n• Deployed all services to Kubernetes on AWS (EKS).',skills:['Go','NATS','REST APIs','Kubernetes','AWS EKS','IoT'],link:null,xp:2000},{emoji:'⚡',title:'Scale, Stability & Load',type:'RE-ARCHITECTURE',typeColor:'#58CC02',year:'PHASE 3 • SCALE',desc:'Challenge: keep the message layer and database stable while thousands of devices reconnect at once and queries run hot.\n• Re-architected NATS from a single cluster into a cluster of leaf nodes: leaf nodes scale out horizontally, handle MQTT device connections and translate MQTT into NATS, while a central hub splits streams with a leader per stream — cutting cluster-wide load and replica counts.\n• Diagnosed NATS cluster instability (leaders dying, elections failing to reach a majority, preconditions never completing) by increasing probe timings and moving connections onto leaf nodes to ease cluster load.\n• Added Redis caching in the callout layer to absorb the thundering herd when ~50K devices reconnect after a NATS restart.\n• Tuned the database with pg_stat_statements profiling, parameter tuning and indexing — p99 fell from ~30s to ~1s at 3,000 qps on a 3GB/2vCPU instance (and to ~30k qps on stronger hardware).\n• Load-tested the whole stack with Locust.',skills:['NATS','Leaf Nodes','MQTT','Redis','pg_stat_statements','Performance Tuning','Locust'],link:null,xp:2500},{emoji:'📈',title:'Observability & Security',type:'OPS & SECURITY',typeColor:'#FF4B4B',year:'PHASE 4 • OPS',desc:'Challenge: make the platform observable and trustworthy for production IoT traffic.\n• Deployed the kube-prom-grafana stack on the cluster for metrics, alerts and dashboards.\n• Added Prometheus metrics inside the zone-controller and callout services, plus a nats-exporter sidecar to watch NATS health.\n• Automated physical backups of both databases with the Crunchy PostgreSQL operator.\n• Built a private Certificate Authority on Vault\'s PKI engine to secure internal infrastructure and IoT device communication.',skills:['Prometheus','Grafana','kube-prom-stack','nats-exporter','crunchy','Vault PKI','TLS'],link:null,xp:1500}]};
 function openModal(g,i){const q=SQ[g][i];document.getElementById('modal-emoji').textContent=q.emoji;document.getElementById('modal-type').textContent=q.type;document.getElementById('modal-type').style.color=q.typeColor;document.getElementById('modal-title').textContent=q.title;document.getElementById('modal-year').textContent=q.year;document.getElementById('modal-desc').textContent=q.desc;document.getElementById('modal-xp').textContent='+'+q.xp+' XP';const sk=document.getElementById('modal-skills');sk.innerHTML=q.skills.map(s=>'<span class="skill-tag">'+s+'</span>').join('');if(q.isPublished)sk.innerHTML+='<span class="achievement-badge">📰 Published</span>';const lnk=document.getElementById('modal-link');if(q.link){lnk.href=q.link;lnk.style.display='inline-flex';lnk.innerHTML='<span class="iconify" data-icon="lucide:external-link" style="font-size:14px"></span> View'}else lnk.style.display='none';document.getElementById('sq-modal').classList.add('active');playSound('click')}
 function closeModal(){document.getElementById('sq-modal').classList.remove('active')}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
@@ -371,7 +384,7 @@ const cv=document.getElementById('stars-canvas'),cx=cv.getContext('2d');let st=[
 
 let gameStarted=false,currentLevel=1;const milestoneXP=[2000,6000,8000,10000],milestoneNames=['The Origin','The Academy','First Quest','The Big Leagues'],MAX_XP=26000;const milestonesReached=new Set();let isAutoScrolling=false;
 
-function startGame(){gameStarted=true;document.getElementById('start-screen').classList.add('hidden');document.getElementById('main-content').style.display='block';document.getElementById('game-hud').classList.add('visible');document.getElementById('character').style.display='block';setTimeout(()=>{showToast('Journey Begins! 🌟');spawnConfetti(innerWidth/2,90);playSound('levelup')},600);setTimeout(()=>checkMilestones(),200)}
+function startGame(){gameStarted=true;document.getElementById('start-screen').classList.add('hidden');document.getElementById('main-content').style.display='block';document.getElementById('game-hud').classList.add('visible');document.getElementById('character').style.display='block';cacheWaypoints();updateCharacter();setTimeout(()=>{showToast('Journey Begins! 🌟');spawnConfetti(innerWidth/2,90);playSound('levelup')},600);setTimeout(()=>checkMilestones(),200)}
 function setXP(xp){const pct=Math.min(xp/MAX_XP*100,100);document.getElementById('hud-xp-bar').style.width=pct+'%';document.getElementById('hud-xp').textContent=xp+' XP';document.getElementById('footer-xp').textContent=xp}
 
 const character=document.getElementById('character');
@@ -379,12 +392,12 @@ const dice=document.getElementById('dice');
 let rollAngleX=0,rollAngleY=0,rollRAF=null,isRolling=false,stopTimer=null;
 const faceOffsets=[[0,0],[0,180],[0,-90],[0,90],[-90,0],[90,0]];
 const faceData=[
-    {emoji:'🦀',label:'Lang',skills:'Rust · Go · Python'},
-    {emoji:'🗄️',label:'Data',skills:'PostgreSQL · TiDB · MongoDB'},
-    {emoji:'🔗',label:'API',skills:'REST · GraphQL · gRPC · NATS'},
-    {emoji:'☸️',label:'Infra',skills:'Docker · K8s · Helm · AWS'},
-    {emoji:'🏭',label:'Domain',skills:'IoT · ERP · Banking'},
-    {emoji:'🏗️',label:'Arch',skills:'Monolith · Event-Driven · Multi-Tenant · MicroSvcs'},
+    {emoji:'<span class="iconify" data-icon="simple-icons:rust" style="font-size:11px;vertical-align:middle"></span>',label:'Lang',skills:'Rust · Go · Python'},
+    {emoji:'<span class="iconify" data-icon="lucide:database" style="font-size:11px;vertical-align:middle"></span>',label:'Data',skills:'PostgreSQL · TiDB · MongoDB'},
+    {emoji:'<span class="iconify" data-icon="lucide:link-2" style="font-size:11px;vertical-align:middle"></span>',label:'API',skills:'REST · GraphQL · gRPC · NATS'},
+    {emoji:'<span class="iconify" data-icon="simple-icons:kubernetes" style="font-size:11px;vertical-align:middle"></span>',label:'Infra',skills:'Docker · K8s · Helm · AWS'},
+    {emoji:'<span class="iconify" data-icon="lucide:factory" style="font-size:11px;vertical-align:middle"></span>',label:'Domain',skills:'IoT · ERP · Banking'},
+    {emoji:'<span class="iconify" data-icon="lucide:layers" style="font-size:11px;vertical-align:middle"></span>',label:'Arch',skills:'Monolith · Event-Driven · Multi-Tenant · MicroSvcs'},
 ];
 
 function startDiceRoll() {
@@ -413,8 +426,21 @@ function stopDiceRoll() {
     document.getElementById('dice-label').innerHTML=`${f.emoji} ${f.label} · ${f.skills}`
 }
 
+const waypoints=[];
+function cacheWaypoints(){
+    waypoints.length=0;
+    document.querySelectorAll('.milestone-section').forEach((s,i)=>{
+        const node=s.querySelector('.milestone-node');
+        if(!node)return;
+        const r=node.getBoundingClientRect();
+        const off=innerWidth<768?60:110;
+        const side=i%2===0?1:-1;
+        waypoints.push({top:r.top+window.scrollY-90,x:r.left+r.width/2+side*off});
+    });
+}
 function updateCharacter() {
     if(!gameStarted||innerWidth<480)return;
+    if(waypoints.length===0)cacheWaypoints();
     const sections=document.querySelectorAll('.milestone-section');
     const lastSection=sections[sections.length-1];
     const lastBottom=lastSection.getBoundingClientRect().bottom;
@@ -424,36 +450,44 @@ function updateCharacter() {
         return
     }
     character.style.opacity='1';
-    character.style.top='90px';
-    let closestI=0,closestD=Infinity;
-    sections.forEach((s,i)=>{
-        const n=s.querySelector('.milestone-node');
-        if(!n)return;
-        const r=n.getBoundingClientRect();
-        const d=Math.abs(r.top-90);
-        if(d<closestD){closestD=d;closestI=i}
-    });
-    const centerX=innerWidth/2;
-    const isMobile=innerWidth<768;
-    const offset=closestI%2===0?(isMobile?60:110):(isMobile?-60:-110);
-    character.style.left=(centerX+offset-26)+'px';
+    const s=window.scrollY||document.documentElement.scrollTop;
+    const vcx=window.innerWidth/2;
+    let x,y;
+    if(s<=waypoints[0].top){x=waypoints[0].x;y=116}
+    else if(s>=waypoints[waypoints.length-1].top){x=waypoints[waypoints.length-1].x;y=116}
+    else{
+        let i=0;while(i<waypoints.length-1&&s>waypoints[i+1].top)i++;
+        const t=Math.min(1,Math.max(0,(s-waypoints[i].top)/(waypoints[i+1].top-waypoints[i].top)));
+        const delay=0.6;
+        const drop=Math.min(130,window.innerHeight*0.25);
+        if(t<delay){
+            x=waypoints[i].x;
+            y=116+Math.pow(t/delay,2)*drop;
+        }else{
+            const te=(t-delay)/(1-delay);
+            const ue=1-te;
+            x=ue*ue*waypoints[i].x+2*ue*te*vcx+te*te*waypoints[i+1].x;
+            y=116+drop*(1-te*te);
+        }
+    }
     const lbl=document.getElementById('dice-label');
-    lbl.style.textAlign=closestI%2===0?'left':'right';
-    lbl.style.paddingLeft=closestI%2===0?'12px':'0';
-    lbl.style.paddingRight=closestI%2===0?'0':'12px';
+    const leanRight=x>=vcx;
+    lbl.style.textAlign=leanRight?'left':'right';
+    lbl.style.paddingLeft=leanRight?'12px':'0';
+    lbl.style.paddingRight=leanRight?'0':'12px';
+    character.style.left=x+'px';
+    character.style.top=y+'px';
     const charCenter=116;
     sections.forEach((section,i)=>{
         const branch=section.querySelector('.sq-branch');
         if(!branch)return;
         const dots=branch.querySelectorAll('.sq-dot.revealed');
         dots.forEach(dot=>{
-            if(i===closestI&&closestD<250){
-                const dr=dot.getBoundingClientRect();
-                const dc=dr.top+dr.height/2;
-                dot.classList.toggle('highlighted',Math.abs(dc-charCenter)<40)
-            }else dot.classList.remove('highlighted')
-        })
-    })
+            const dr=dot.getBoundingClientRect();
+            const dc=dr.top+dr.height/2;
+            dot.classList.toggle('highlighted',Math.abs(dc-charCenter)<40);
+        });
+    });
 }
 
 function checkMilestones(){if(!gameStarted||isAutoScrolling)return;const sections=document.querySelectorAll('.milestone-section');const charY=90;
@@ -474,7 +508,7 @@ addEventListener('keydown',e=>{if(e.key==='Enter'&&!gameStarted)startGame()});
 const ro=document.getElementById('rotate-overlay');
 function checkOrientation(){ro.classList.toggle('visible',innerWidth<768&&innerHeight>innerWidth)}
 checkOrientation();
-addEventListener('resize',checkOrientation);
+addEventListener('resize',()=>{checkOrientation();cacheWaypoints()});
 addEventListener('orientationchange',()=>setTimeout(checkOrientation,300));
 </script>
 </body>
